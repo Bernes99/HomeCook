@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32210.238
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeCook", "HomeCook\HomeCook.csproj", "{A7CBA827-930A-4160-9255-B957F83A7B81}"
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{9F3E979B-F2C5-4F50-A057-53DFA06CF7DE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A7CBA827-930A-4160-9255-B957F83A7B81}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A7CBA827-930A-4160-9255-B957F83A7B81}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A7CBA827-930A-4160-9255-B957F83A7B81}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A7CBA827-930A-4160-9255-B957F83A7B81}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9F3E979B-F2C5-4F50-A057-53DFA06CF7DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9F3E979B-F2C5-4F50-A057-53DFA06CF7DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9F3E979B-F2C5-4F50-A057-53DFA06CF7DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9F3E979B-F2C5-4F50-A057-53DFA06CF7DE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5FDF98E5-9200-4552-9401-FACFEDEEE5D9}
+	EndGlobalSection
+EndGlobal

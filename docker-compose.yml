@@ -1,0 +1,25 @@
+version: '3.4'
+
+services:
+  homecook:
+    container_name: HomeCook
+    image: ${DOCKER_REGISTRY-}homecook
+    build:
+      context: .
+      dockerfile: HomeCook/Dockerfile
+    depends_on:
+      - homecookdb
+  homecookdb:
+    container_name: homecookdb
+    image: homecookdb
+    environment:
+      POSTGRES_USER: "HomeCookDbOwner"
+      POSTGRES_PASSWORD: "HomeCookRoot"
+    volumes:
+      - homecookdbdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+volumes:
+  homecookdbdata:
+    name: homecookdbdata
+    driver: local
