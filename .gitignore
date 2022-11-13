@@ -396,3 +396,12 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
+
+# ignore .tools
+*.bat
+ScaffoldExtra/
+
+*secret*
+
+.vscode
