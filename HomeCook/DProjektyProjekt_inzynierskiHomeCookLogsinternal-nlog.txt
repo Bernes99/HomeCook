@@ -1,0 +1,18 @@
+2022-11-18 21:16:55.7775 Info Message Template Auto Format enabled
+2022-11-18 21:16:55.9055 Info Loading assembly: NLog.Web.AspNetCore
+2022-11-18 21:16:56.0926 Info Adding target FileTarget(Name=exceptions)
+2022-11-18 21:16:56.0986 Info Adding target FileTarget(Name=allfile)
+2022-11-18 21:16:56.1795 Info Validating config: TargetNames=allfile, exceptions, ConfigItems=40, FilePath=/app/nlog.config
+2022-11-18 21:16:58.9219 Info Validating config: TargetNames=allfile, exceptions, ConfigItems=40, FilePath=/app/nlog.config
+2022-11-18 22:38:15.9601 Info Message Template Auto Format enabled
+2022-11-18 22:38:16.0450 Info Loading assembly: NLog.Web.AspNetCore
+2022-11-18 22:38:16.1685 Info Adding target FileTarget(Name=exceptions)
+2022-11-18 22:38:16.1685 Info Adding target FileTarget(Name=allfile)
+2022-11-18 22:38:16.2131 Info Validating config: TargetNames=allfile, exceptions, ConfigItems=40, FilePath=/app/nlog.config
+2022-11-18 22:38:17.4266 Info Validating config: TargetNames=allfile, exceptions, ConfigItems=40, FilePath=/app/nlog.config
+2022-11-18 22:43:54.0913 Info Message Template Auto Format enabled
+2022-11-18 22:43:54.1641 Info Loading assembly: NLog.Web.AspNetCore
+2022-11-18 22:43:54.2767 Info Adding target FileTarget(Name=exceptions)
+2022-11-18 22:43:54.2767 Info Adding target FileTarget(Name=allfile)
+2022-11-18 22:43:54.3193 Info Validating config: TargetNames=allfile, exceptions, ConfigItems=40, FilePath=/app/nlog.config
+2022-11-18 22:43:55.7165 Info Validating config: TargetNames=allfile, exceptions, ConfigItems=40, FilePath=/app/nlog.config
