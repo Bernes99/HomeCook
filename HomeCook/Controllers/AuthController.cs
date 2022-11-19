@@ -8,6 +8,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using System.Xml;
+using HomeCook.Data.Models.CustomModels;
 
 namespace HomeCook.Controllers
 {
@@ -103,17 +104,6 @@ namespace HomeCook.Controllers
             return Ok(result);
         }
 
-        [HttpPost("googleLoginv1")]
-        public async Task<IActionResult> LoginGoogle(string provider, string returnUrl)
-        {
-            var redirectUrl = $"https://localhost:8081/api/auth/googleLoginCallback?returnUrl={returnUrl}";
-            var properties = AuthService.ConfigureExternalAuthProp(provider, redirectUrl);
-            properties.AllowRefresh = true;
-            
-            var result = Challenge(properties, provider);
-            return Ok(result);
-        }
-
         [HttpPost("googleLogin")]
         public async Task<IActionResult> LoginCallback([FromBody]ExternalAuthDto externalAuth)
         {
@@ -129,6 +119,13 @@ namespace HomeCook.Controllers
             return Ok(result);
 
         }
+        [HttpPost("GetAllUsers")]
+        public async Task<ActionResult> GetAllUsers([FromQuery] PaginationQuery query)
+        {
+            var users = AuthService.GetUsers(query);
+            return Ok(users);
+        }
+
 
         [HttpGet("test")]
         public async Task<ActionResult<LoggedInResponse>> test()
