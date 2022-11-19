@@ -83,12 +83,6 @@ var authBuilder = builder.Services.AddAuthentication(authentication =>
 
         return Task.CompletedTask;
     };
-})
-.AddGoogle(googleOptions =>
-{
-    googleOptions.ClientId = builder.Configuration["Authentication:Google:ClientId"];
-    googleOptions.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
-    
 });
 
 builder.Services.ConfigureApplicationCookie(options =>
