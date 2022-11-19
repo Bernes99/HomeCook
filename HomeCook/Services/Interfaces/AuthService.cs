@@ -18,6 +18,10 @@ using HomeCook.Data.CustomException;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Configuration;
 using Google.Apis.Auth;
+using HomeCook.Data.Models.CustomModels;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using HomeCook.DTO.Pagination;
+using System.Linq.Expressions;
 
 namespace HomeCook.Services
 {
@@ -371,6 +375,49 @@ namespace HomeCook.Services
             //}
 
             //return null;
+        }
+
+        public PaginationResult<UserDto> GetUsers(PaginationQuery query)
+        {
+            string searchPhrase = "";
+            if (query is not null )
+            {
+                if (query.SearchPhrase is not null)
+                {
+                    searchPhrase = query.SearchPhrase.ToUpper();
+                }
+                if (query.SortBy is not null)
+                {
+                    query.SortBy = query.SortBy.ToUpper();
+                }
+                
+            }
+            var users = Context.Users.Where(s => query.SearchPhrase == null || (s.firstName.ToUpper().Contains(searchPhrase) || s.surname.ToUpper().Contains(searchPhrase) ||
+                s.NormalizedEmail.Contains(searchPhrase)));
+
+            if (!string.IsNullOrEmpty(query.SortBy))
+            {
+                var columnsSelectors = new Dictionary<string, Expression<Func<AppUser, object>>>
+                {
+                    { nameof(AppUser.firstName).ToUpper(), u => u.firstName },
+                    { nameof(AppUser.surname).ToUpper(), u => u.surname },
+                    { nameof(AppUser.Email).ToUpper(), u => u.Email },
+                    { nameof(AppUser.LastLogin).ToUpper(), u => u.LastLogin },
+                };
+                var selectedColumn = columnsSelectors[query.SortBy];
+
+                users = query.SortDirection == SortDirection.ASC ? users.OrderBy(selectedColumn) : users.OrderByDescending(selectedColumn);
+            }
+
+            var pagedUsers = users
+                .Skip(query.PageSize * (query.PageNumber - 1))
+                .Take(query.PageSize);
+
+            var usersDto = Mapper.Map<List<UserDto>>(pagedUsers);
+
+            var usersCount = users.Count();
+            var result = new PaginationResult<UserDto>(usersDto, usersCount, query.PageSize, query.PageNumber);
+            return result;
         }
     }
 }

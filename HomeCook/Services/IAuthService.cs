@@ -1,5 +1,7 @@
 ﻿using HomeCook.Data.Models;
+using HomeCook.Data.Models.CustomModels;
 using HomeCook.DTO;
+using HomeCook.DTO.Pagination;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
@@ -15,6 +17,7 @@ namespace HomeCook.Services
         string GenerateRefreshToken();
         Task<ExternalLoginInfo> GetExternalLoginInfo();
         Task<IList<Claim>> GetUserClaimsAsync(AppUser user);
+        PaginationResult<UserDto> GetUsers(PaginationQuery searchPhrase);
         Task<AuthenticationResponse?> Login(LoginDto model);
         Task Logout();
         Task<AuthenticationResponse> Refresh(string refreshToken);
