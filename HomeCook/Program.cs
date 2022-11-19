@@ -151,7 +151,7 @@ builder.Services.Configure<CookiePolicyOptions>(options =>
     options.MinimumSameSitePolicy = SameSiteMode.Unspecified;
 });
 
-builder.Services.AddAutoMapper(builder.Services.GetType().Assembly);
+builder.Services.AddAutoMapper(typeof(Program));
 
 builder.Services.AddCors(p => p.AddPolicy("CORSPolicy", buid => {
     buid.WithOrigins("http://localhost:5173", "https://www.youtube.com/").AllowAnyMethod().AllowAnyHeader().AllowCredentials();
