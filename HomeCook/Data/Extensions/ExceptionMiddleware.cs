@@ -31,9 +31,9 @@ namespace HomeCook.Data.Extensions
             context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
             Logger.LogError($"Something went wrong: {exception.StackTrace}");
 
-            switch (exception.Message)
+            switch (exception)
             {
-                case AuthException.InvalidRefreshToken:
+                case AuthException:
                     await context.Response.WriteAsync(new ErrorDetails()
                     {
                         StatusCode = StatusCodes.Status401Unauthorized,

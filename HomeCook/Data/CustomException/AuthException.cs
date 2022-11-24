@@ -1,4 +1,6 @@
-﻿namespace HomeCook.Data.CustomException
+﻿using Microsoft.AspNetCore.Identity;
+
+namespace HomeCook.Data.CustomException
 {
     public class AuthException: Exception
     {
@@ -9,9 +11,18 @@
             InvalidLoginAttempt = "Invalid Login Attempt",
             InvalidRefreshToken = "Invalid Refresh Token";
 
+        readonly Dictionary<string, string> errors = new Dictionary<string, string>();
         public AuthException(string errorMessage): base(String.Format(errorMessage))
         {
 
+        }
+
+        public AuthException(IdentityError[] identityErrors)
+        {
+            foreach (var err in identityErrors)
+            {
+                errors.Add(err.Code, err.Description);
+            }
         }
     }
 }

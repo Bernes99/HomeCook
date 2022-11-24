@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using HomeCook.DTO;
 using HomeCook.Services.Interfaces;
-using HomeCook.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Security.Claims;
@@ -9,6 +8,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using System.Xml;
 using HomeCook.Data.Models.CustomModels;
+using HomeCook.DTO.ResetPassword;
 
 namespace HomeCook.Controllers
 {
@@ -104,6 +104,20 @@ namespace HomeCook.Controllers
             return Ok(result);
         }
 
+        [HttpGet]
+        [Route("verifyEmail")]
+        public async Task<ActionResult> ConfirmEmail([FromQuery] string userId, [FromQuery] string code)
+        {
+            if (userId == null || code == null)
+            {
+                return BadRequest("Invalid email confirmation url");
+            }
+
+            var status = await AuthService.ConfirmEmailAddress(userId, code);
+
+            return Ok(status);
+        }
+
         [HttpPost("googleLogin")]
         public async Task<IActionResult> LoginCallback([FromBody]ExternalAuthDto externalAuth)
         {
@@ -119,7 +133,26 @@ namespace HomeCook.Controllers
             return Ok(result);
 
         }
-        [HttpPost("GetAllUsers")]
+
+        [HttpPost]
+        [Route("forgotpassword")]
+        public async Task<ActionResult> ForgotPassword([FromBody] ForgotPasswordDto model)
+        {
+            var status = await AuthService.ForgotPassword(model.Email);
+
+            return Ok(status);
+        }
+
+        [HttpPost]
+        [Route("resetpassword")]
+        public async Task<ActionResult> ResetPassword([FromBody] ResetPasswordDto resetPassword)
+        {
+            var status = await AuthService.ResetPassword(resetPassword);
+
+            return Ok(status);
+        }
+
+        [HttpGet("GetAllUsers")]
         public async Task<ActionResult> GetAllUsers([FromQuery] PaginationQuery query)
         {
             var users = AuthService.GetUsers(query);

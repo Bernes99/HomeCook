@@ -22,6 +22,9 @@ using HomeCook.Data.Models.CustomModels;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using HomeCook.DTO.Pagination;
 using System.Linq.Expressions;
+using System.Web;
+using HomeCook.DTO.ResetPassword;
+using Microsoft.AspNetCore.WebUtilities;
 
 namespace HomeCook.Services
 {
@@ -33,11 +36,13 @@ namespace HomeCook.Services
         private SignInManager<AppUser> signInManager;
         private readonly IConfigurationSection GoolgeSettings;
         private readonly IConfiguration Configuration;
+        private IEmailService _emailService;
         public AuthService(DefaultDbContext context, SignInManager<AppUser> signInManager,
             UserManager<AppUser> userManager, 
             IPasswordHasher<AppUser> passwordHasher, 
             IMapper mapper,
             IConfiguration configuration,
+            IEmailService emailService,
             AuthenticationSettings authSettings) : base(context, mapper)
         {
             AuthSettings = authSettings;
@@ -47,6 +52,7 @@ namespace HomeCook.Services
             this.userManager = userManager;
             Configuration = configuration;
             GoolgeSettings = Configuration.GetSection("Authentication:Google");
+            _emailService = emailService;
 
         }
 
@@ -102,13 +108,16 @@ namespace HomeCook.Services
 
             if (!result.Succeeded)
             {
-                return null;
+                throw new AuthException(AuthException.InvalidLoginAttempt);
             }
             if (await userManager.IsLockedOutAsync(user) && passwordCheck)
             {
                 throw new UnauthorizedAccessException("Locked");
             }
             var tokens = await CreateJwtTokens(user);
+
+            user.LastLogin = DateTime.Now;
+            await userManager.UpdateAsync(user);
 
             return tokens;
         }
@@ -133,28 +142,42 @@ namespace HomeCook.Services
             firstName = registerDto.FirstName,
             surname = registerDto.Surname,
             };
-
-            var result = await userManager.CreateAsync(newUser, registerDto.Password);
-
-            var claims = new[] {
-                    new Claim(ClaimTypes.Actor, ClaimType.User.ToString()),
-                    new Claim(ClaimTypes.Role, RoleType.User.ToString()),
-                    new Claim(ClaimTypes.NameIdentifier, registerDto.Email),
-                    new Claim("PublicId", newUser.Id)
-            };
-            result = await userManager.AddClaimsAsync(newUser, claims);
-            if (result.Succeeded)
+            try
             {
-                await signInManager.SignInAsync(newUser, isPersistent: registerDto.RemenberLogin);
+                var result = await userManager.CreateAsync(newUser, registerDto.Password);
+                if (!result.Succeeded)
+                {
+                    throw new AuthException(result.Errors.ToArray());
+                    //throw new Exception(AuthException.UserAlreadyExist);
+                }
+                var claims = new[] {
+                new Claim(ClaimTypes.Actor, ClaimType.User.ToString()),
+                new Claim(ClaimTypes.Role, RoleType.User.ToString()),
+                new Claim(ClaimTypes.NameIdentifier, registerDto.Email),
+                new Claim("PublicId", newUser.Id)
+            };
+                result = await userManager.AddClaimsAsync(newUser, claims);
+                if (result.Succeeded)
+                {
+                    var emailVerificationCode = HttpUtility.UrlEncode(await userManager.GenerateEmailConfirmationTokenAsync(newUser));
+                    await _emailService.SendEmailConfirmationEmail(newUser, emailVerificationCode);
+                    await signInManager.SignInAsync(newUser, isPersistent: registerDto.RemenberLogin);
 
-                return newUser;
+                    return newUser;
+                }
+                else
+                {
+                    await userManager.DeleteAsync(newUser);
+                    //throw new AuthException(AuthException.UserAlreadyExist);
+                    throw new Exception(AuthException.UserAlreadyExist);
+                }
             }
-            else
+            catch (Exception)
             {
                 await userManager.DeleteAsync(newUser);
-                //throw new AuthException(AuthException.UserAlreadyExist);
-                throw new Exception(AuthException.UserAlreadyExist);
+                throw;
             }
+            
         }
 
         public string GenerateRefreshToken()
@@ -184,41 +207,6 @@ namespace HomeCook.Services
             }
             var tokens = await CreateJwtTokens(user);
             return tokens;
-
-            //var tokenValidationParameters = new TokenValidationParameters
-            //{
-            //    ValidateAudience = false,
-            //    ValidateIssuer = false,
-            //    ValidateIssuerSigningKey = true,
-            //    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(AuthSettings.JwtKey)),
-            //    ValidateLifetime = false
-            //};
-
-            //var tokenHandler = new JwtSecurityTokenHandler();
-            //SecurityToken securityToken;
-            //var principal = tokenHandler.ValidateToken(authenticationResponse.JwtToken, tokenValidationParameters, out securityToken);
-            //var jwtSecurityToken = securityToken as JwtSecurityToken;
-            //if (jwtSecurityToken == null || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
-            //{
-            //    throw new SecurityTokenException("Invalid token");
-            //}
-
-            //var email = principal.Claims.FirstOrDefault(c => c.Type == "Email");
-            //var user = Context.Users.FirstOrDefault(u => u.Email == email.Value);
-
-            //if (user == null || user.RefreshToken != authenticationResponse.RefreshToken || user.RefreshTokenExpiryTime <= DateTime.Now)
-            //{
-            //    throw new Exception("Invalid client request");
-            //}
-
-            //var result = CreateJwtToken(user);
-
-            //return new LoginResponse
-            //{
-            //    JwtToken = result.JwtToken,
-            //    RefreshToken = result.RefreshToken,
-            //    JwtTokenExpiryTime = DateTime.Now.AddDays(AuthSettings.JwtExpireDays)
-            //};
         }
 
         public async Task<GoogleJsonWebSignature.Payload> VerifyGoogleToken(ExternalAuthDto externalAuth)
@@ -266,7 +254,7 @@ namespace HomeCook.Services
                 user = await userManager.FindByEmailAsync(payload.Email);
                 if (user == null)
                 {
-                    user = new AppUser { Email = payload.Email, UserName = payload.Email, surname = payload.FamilyName, firstName = payload.GivenName };
+                    user = new AppUser { Email = payload.Email, UserName = payload.Email, surname = payload.FamilyName, firstName = payload.GivenName,EmailConfirmed = true };
 
                     await userManager.CreateAsync(user);
 
@@ -292,89 +280,40 @@ namespace HomeCook.Services
 
             await signInManager.SignInAsync(user, false);
             var tokens = await CreateJwtTokens(user);
+
+            user.LastLogin = DateTime.Now;
+            await userManager.UpdateAsync(user);
+
             return tokens;
 
-            //await userManager.SetAuthenticationTokenAsync(
-            //        user,
-            //        TokenOptions.DefaultProvider,
-            //        "X-Refresh-Token",
-            //        tokens.RefreshToken);
+        }
 
-            //var signinResult = await signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, false);
-            //var email = info.Principal.FindFirstValue(ClaimTypes.Email);
-            //var user = await userManager.FindByEmailAsync(email);
-            //var claims = await GetUserClaimsAsync(user);
+        public async Task<IdentityResult> ConfirmEmailAddress(string userId, string code)
+        {
+            var user = await userManager.FindByIdAsync(userId);
+            if (user == null)
+                return IdentityResult.Failed();
 
-            //if (signinResult.Succeeded)
-            //{
-            //    var tokens = await CreateJwtTokens(user);
-            //    //var jwtResult = await jwtAuthManager.GenerateTokens(user, claims, DateTime.UtcNow);
+            return await userManager.ConfirmEmailAsync(user, code);
+        }
 
-            //    await userManager.SetAuthenticationTokenAsync(
-            //        user,
-            //        TokenOptions.DefaultProvider,
-            //        "X-Refresh-Token",
-            //        tokens.RefreshToken);
+        public async Task<IdentityResult> ForgotPassword(string email)
+        {
+            var user = await userManager.FindByEmailAsync(email);
+            if (user == null)
+                return IdentityResult.Failed();
+            //URLEncode dlatego ze przy wysyłaniu na frodta jako query parameter sie psuje
+            var forgorPasswordCode = HttpUtility.UrlEncode(await userManager.GeneratePasswordResetTokenAsync(user));
+            await _emailService.SendForgotPasswordEmail(user, forgorPasswordCode);
+            return IdentityResult.Success;
+        }
+        public async Task<IdentityResult> ResetPassword(ResetPasswordDto resetPassword)
+        {
+            var user = await userManager.FindByIdAsync(resetPassword.UserId);
+            if (user == null)
+                return IdentityResult.Failed();
 
-            //    //loginResult = new LoginResultViewModel()
-            //    //{
-            //    //    User = new UserViewModel()
-            //    //    {
-            //    //        Email = email,
-            //    //        AccessToken = jwtResult.AccessToken,
-            //    //        RefreshToken = jwtResult.RefreshToken,
-            //    //        FirstName = user.FirstName,
-            //    //        LastName = user.LastName,
-            //    //        Phone = user.PhoneNumber,
-            //    //        UserId = user.Id
-            //    //    }
-            //    //};
-
-            //    return tokens;
-            //}
-
-            //if ( !String.IsNullOrEmpty(email))
-            //{
-            //    if (user == null)
-            //    {
-            //        user = new AppUser()
-            //        {
-            //            UserName = info.Principal.FindFirstValue(ClaimTypes.Email),
-            //            Email = info.Principal.FindFirstValue(ClaimTypes.Email)
-            //        };
-            //        await userManager.CreateAsync(user);
-            //    }
-
-            //    await userManager.AddLoginAsync(user, info);
-            //    await signInManager.SignInAsync(user, false);
-            //    var tokens = await CreateJwtTokens(user);
-            //    //var jwtResult = await jwtAuthManager.GenerateTokens(user, claims, DateTime.UtcNow);
-
-            //    //sucess
-            //    await userManager.SetAuthenticationTokenAsync(
-            //        user,
-            //        TokenOptions.DefaultProvider,
-            //        "X-Refresh-Token",
-            //        tokens.RefreshToken);
-
-            //    //loginResult = new LoginResultViewModel()
-            //    //{
-            //    //    User = new UserViewModel()
-            //    //    {
-            //    //        Email = email,
-            //    //        AccessToken = jwtResult.AccessToken,
-            //    //        RefreshToken = jwtResult.RefreshToken,
-            //    //        FirstName = user.FirstName,
-            //    //        LastName = user.LastName,
-            //    //        Phone = user.PhoneNumber,
-            //    //        UserId = user.Id
-            //    //    }
-            //    //};
-
-            //    return tokens;
-            //}
-
-            //return null;
+            return await userManager.ResetPasswordAsync(user, resetPassword.ResetToken, resetPassword.NewPassword);
         }
 
         public PaginationResult<UserDto> GetUsers(PaginationQuery query)
