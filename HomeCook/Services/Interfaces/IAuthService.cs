@@ -14,6 +14,7 @@ namespace HomeCook.Services.Interfaces
         AuthenticationProperties ConfigureExternalAuthProp(string provider, string redirectUrl);
         Task<IdentityResult> ConfirmEmailAddress(string userId, string code);
         Task<AuthenticationResponse> CreateJwtTokens(AppUser user);
+        Task<IdentityResult> DeleteUser(string userId);
         Task<AuthenticationResponse> ExternalLogin(ExternalAuthDto externalAuth);
         Task<AppUser> FindUserAsync(string emailAddress);
         Task<IdentityResult> ForgotPassword(string email);
@@ -27,5 +28,6 @@ namespace HomeCook.Services.Interfaces
         Task<AppUser> Register(RegisterDto registerDto);
         Task<IdentityResult> ResetPassword(ResetPasswordDto resetPassword);
         void test();
+        Task<IdentityResult> UpdateUser(string userId, UserUpdateDto model);
     }
 }

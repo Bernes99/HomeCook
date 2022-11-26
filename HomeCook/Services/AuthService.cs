@@ -128,7 +128,11 @@ namespace HomeCook.Services
         }
         public async Task<AppUser> FindUserAsync(string emailAddress)
         {
-            return await userManager.FindByEmailAsync(emailAddress) ?? await userManager.FindByNameAsync(emailAddress); ;
+            return await userManager.FindByEmailAsync(emailAddress) ?? await userManager.FindByNameAsync(emailAddress);
+        }
+        public async Task<AppUser> FindUserAsyncbyId(string userId)
+        {
+            return await userManager.FindByIdAsync(userId);
         }
         public async Task<IList<Claim>> GetUserClaimsAsync(AppUser user)
         {
@@ -332,7 +336,7 @@ namespace HomeCook.Services
                 
             }
             var users = Context.Users.Where(s => query.SearchPhrase == null || (s.firstName.ToUpper().Contains(searchPhrase) || s.surname.ToUpper().Contains(searchPhrase) ||
-                s.NormalizedEmail.Contains(searchPhrase)));
+                s.NormalizedEmail.Contains(searchPhrase)) && !s.IsDeleted);
 
             if (!string.IsNullOrEmpty(query.SortBy))
             {
@@ -357,6 +361,49 @@ namespace HomeCook.Services
             var usersCount = users.Count();
             var result = new PaginationResult<UserDto>(usersDto, usersCount, query.PageSize, query.PageNumber);
             return result;
+        }
+
+        public async Task<IdentityResult> DeleteUser(string userId)
+        {
+            var user = await FindUserAsyncbyId(userId);
+
+            if (user is null)
+            {
+                throw new AuthException(AuthException.UserDoesNotExist);
+            }
+            user.IsDeleted = true;
+            return await userManager.UpdateAsync(user);
+
+        }
+        public async Task<IdentityResult> UpdateUser(string userId, UserUpdateDto model)
+        {
+            var user = await FindUserAsyncbyId(userId);
+
+            if (user is null)
+            {
+                throw new AuthException(AuthException.UserDoesNotExist);
+            }
+            if (model is null)
+            {
+                throw new AuthException(AuthException.BadRequest);
+            }
+
+            user.firstName = model.FirstName ?? user.firstName ?? null;
+            user.surname = model.Surname ?? user.surname ?? null;
+            user.UserName = model.UserName ?? user.UserName ?? null;
+            user.Email = model.Email ?? user.Email ?? null;
+
+            if (string.IsNullOrEmpty(model.Email))
+            {
+                await userManager.UpdateNormalizedEmailAsync(user);
+            }
+            if (string.IsNullOrEmpty(model.UserName))
+            {
+                await userManager.UpdateNormalizedUserNameAsync(user);
+            }
+
+            return await userManager.UpdateAsync(user);
+
         }
     }
 }

@@ -9,6 +9,8 @@ namespace HomeCook.Data.CustomException
             UserHasNoInstitutionAssigned = "User has no Institution assigned.",
             UserAlreadyExist = "User Already Exist.",
             InvalidLoginAttempt = "Invalid Login Attempt",
+            UserDoesNotExist = "User Does Not Exist",
+            BadRequest = "Bad Request",
             InvalidRefreshToken = "Invalid Refresh Token";
 
         readonly Dictionary<string, string> errors = new Dictionary<string, string>();

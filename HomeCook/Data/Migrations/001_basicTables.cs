@@ -26,9 +26,9 @@ namespace HomeCook.Data.Migrations
                     .WithId()
                     .WithPublicId()
                     .WithColumn("Name").AsString(128)
-                    .WithColumn("Calories").AsInt64()
-                    .WithColumn("Category").AsInt32()
-                    .WithColumn("UnitType").AsInt32();
+                    .WithColumn("Calories").AsInt64().Nullable()
+                    .WithColumn("Category").AsInt32().Nullable()
+                    .WithColumn("UnitType").AsInt32().Nullable();
             }
             if (!Schema.Table("Recipes").Exists())
             {
@@ -38,9 +38,9 @@ namespace HomeCook.Data.Migrations
                     .WithAuditable()
                     .WithSoftDelete()
                     .WithColumn("Title").AsText()
-                    .WithColumn("Introdution").AsInt64Text()
-                    .WithColumn("Text").AsInt64Text()
-                    .WithColumn("Rating").AsFloat()
+                    .WithColumn("Introdution").AsInt64Text().Nullable()
+                    .WithColumn("Text").AsInt64Text().Nullable()
+                    .WithColumn("Rating").AsFloat().Nullable()
                     .WithColumn("Portion").AsText()
                     .WithColumn("AuthorId").AsFixedLengthAnsiString(36)
                     .WithColumn("PreparingTime").AsText()
@@ -67,7 +67,7 @@ namespace HomeCook.Data.Migrations
                    .WithPublicId()
                    .WithColumn("AuthorId").AsFixedLengthAnsiString(36)
                    .WithSoftDelete()
-                   .WithColumn("Text").AsInt64Text();
+                   .WithColumn("Text").AsInt64Text().Nullable();
             }
             if (!Schema.Table("CommentsRecipe").Exists())
             {
@@ -123,7 +123,7 @@ namespace HomeCook.Data.Migrations
                    .WithPublicId()
                    .WithColumn("RecipeId").AsInt64()
                         .ForeignKey("FK_RecipesImages_RecipeId", "App", "Recipes", "Id")
-                   .WithColumn("Name").AsText()
+                   .WithColumn("Name").AsText().Nullable()
                    .WithColumn("Value").AsInt64Text();
             }
 
@@ -133,7 +133,7 @@ namespace HomeCook.Data.Migrations
                    .WithId()
                    .WithPublicId()
                    .WithColumn("UserId").AsFixedLengthAnsiString(36)
-                   .WithColumn("Name").AsText()
+                   .WithColumn("Name").AsText().Nullable()
                    .WithColumn("Value").AsInt64Text();
             }
 
@@ -145,8 +145,8 @@ namespace HomeCook.Data.Migrations
                    .WithColumn("UserId").AsFixedLengthAnsiString(36)
                     .WithColumn("ProductId").AsInt64()
                         .ForeignKey("FK_UserProducts_ProductId", "App", "Products", "Id")
-                   .WithColumn("ExpirationDate").AsDateTime2()
-                   .WithColumn("Amount").AsText()
+                   .WithColumn("ExpirationDate").AsDateTime2().Nullable()
+                   .WithColumn("Amount").AsText().Nullable()
                    .WithColumn("IsOnShoppingList").AsBoolean();
             }
 
@@ -159,7 +159,7 @@ namespace HomeCook.Data.Migrations
                         .ForeignKey("FK_UserProducts_RecipeId", "App", "Recipes", "Id")
                     .WithColumn("ProductId").AsInt64()
                         .ForeignKey("FK_RecipeProduct_ProductId", "App", "Products", "Id")
-                   .WithColumn("Amount").AsText();
+                   .WithColumn("Amount").AsText().Nullable();
             }
         }
 
