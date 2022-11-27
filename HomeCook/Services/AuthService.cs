@@ -425,46 +425,11 @@ namespace HomeCook.Services
             {
                 await userManager.UpdateNormalizedUserNameAsync(user);
             }
-            UpdateProfileImage(model.File, user.Id);
 
             return await userManager.UpdateAsync(user);
 
         }
 
-        public void UpdateProfileImage(IFormFile file, string userId)
-        {
-            var profileImage = Context.ProfileImages.FirstOrDefault(x => x.UserId == userId);
-
-            if (file is not null && file.Length > 0)
-            {
-                using (var memoryStream = new MemoryStream())
-                {
-                    file.CopyTo(memoryStream);
-                    // Upload the file if less than 2 MB
-                    if (memoryStream.Length < 2097152)
-                    {
-                        try
-                        {
-                            var newPhoto = new ProfileImage()
-                            {
-                                Value = memoryStream.ToArray(),
-                                Name = file.FileName,
-                                UserId = userId,
-                            };
-                            if (profileImage is not null)
-                            {
-                                Context.ProfileImages.Remove(profileImage);
-                            }
-                            Context.ProfileImages.Add(newPhoto);
-                            Context.SaveChanges();
-                        }
-                        catch (Exception)
-                        {
-                            throw new AuthException(AuthException.ProfileImageError);
-                        }
-                    }
-                }
-            }
-        }
+        
     }
 }
