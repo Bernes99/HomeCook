@@ -25,6 +25,7 @@ using System.Linq.Expressions;
 using System.Web;
 using HomeCook.DTO.ResetPassword;
 using Microsoft.AspNetCore.WebUtilities;
+using System.IO;
 
 namespace HomeCook.Services
 {
@@ -261,18 +262,41 @@ namespace HomeCook.Services
                     user = new AppUser { Email = payload.Email, UserName = payload.Email, surname = payload.FamilyName, firstName = payload.GivenName,EmailConfirmed = true };
 
                     await userManager.CreateAsync(user);
-
+                    
                     var claims = new[] {
                     new Claim(ClaimTypes.Actor, ClaimType.User.ToString()),
                     new Claim(ClaimTypes.Role, RoleType.User.ToString()),
                     new Claim(ClaimTypes.NameIdentifier, payload.Email),
                     new Claim("PublicId", user.Id)
                        };
-                     await userManager.AddClaimsAsync(user, claims);
+                    await userManager.AddClaimsAsync(user, claims);
 
                     //prepare and send an email for the email confirmation
                     //await userManager.AddToRoleAsync(user, "Viewer");
                     await userManager.AddLoginAsync(user, info);
+
+                    #region update profile image
+                    var profileImage = Context.ProfileImages.FirstOrDefault(x => x.UserId == user.Id);
+                    try
+                    {
+                        var newPhoto = new ProfileImage()
+                        {
+                            Path = payload.Picture,
+                            Name = "Google Profile Image",
+                            UserId = user.Id,
+                        };
+                        if (profileImage is not null)
+                        {
+                            Context.ProfileImages.Remove(profileImage);
+                        }
+                        Context.ProfileImages.Add(newPhoto);
+                        Context.SaveChanges();
+                    }
+                    catch (Exception)
+                    {
+                        throw new AuthException(AuthException.ProfileImageError);
+                    }
+                    #endregion
                 }
                 else
                 {
