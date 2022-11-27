@@ -40,7 +40,7 @@ namespace HomeCook.Data.Migrations
         public static ICreateTableWithColumnSyntax WithPublicId(this ICreateTableWithColumnSyntax builder)
         {
             return builder
-                .WithColumn("PublicId").AsFixedLengthAnsiString(36).WithDefault(SystemMethods.NewGuid);
+                .WithColumn("PublicId").AsFixedLengthAnsiString(36).WithDefaultValue(Guid.NewGuid().ToString());//asGuid().WithDefault(SystemMethods.NewGuid);
         }
         #endregion
 
