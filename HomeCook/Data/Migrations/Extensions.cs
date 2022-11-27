@@ -1,4 +1,5 @@
-﻿using FluentMigrator.Builders;
+﻿using FluentMigrator;
+using FluentMigrator.Builders;
 using FluentMigrator.Builders.Create.Table;
 using FluentMigrator.Infrastructure;
 
@@ -39,7 +40,7 @@ namespace HomeCook.Data.Migrations
         public static ICreateTableWithColumnSyntax WithPublicId(this ICreateTableWithColumnSyntax builder)
         {
             return builder
-                .WithColumn("PublicId").AsFixedLengthAnsiString(36);
+                .WithColumn("PublicId").AsFixedLengthAnsiString(36).WithDefault(SystemMethods.NewGuid);
         }
         #endregion
 
