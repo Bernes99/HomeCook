@@ -11,6 +11,7 @@ namespace HomeCook.Data.CustomException
             InvalidLoginAttempt = "Invalid Login Attempt",
             UserDoesNotExist = "User Does Not Exist",
             BadRequest = "Bad Request",
+            ProfileImageError = "Profile Image Error",
             InvalidRefreshToken = "Invalid Refresh Token";
 
         readonly Dictionary<string, string> errors = new Dictionary<string, string>();

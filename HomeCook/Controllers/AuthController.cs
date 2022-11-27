@@ -170,7 +170,7 @@ namespace HomeCook.Controllers
         }
 
         [HttpPost("UpdateUser/{Id}")]
-        public async Task<ActionResult> UpdateUser([FromRoute] string Id, [FromBody] UserUpdateDto model)
+        public async Task<ActionResult> UpdateUser([FromRoute] string Id, [FromForm] UserUpdateDto model)
         {
             var result = await AuthService.UpdateUser(Id, model);
             if (result.Succeeded)
