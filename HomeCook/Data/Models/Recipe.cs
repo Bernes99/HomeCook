@@ -23,9 +23,9 @@ namespace HomeCook.Data.Models
         public DateTime? DateDeletedUtc { get; set; }
         public string? DeletedBy { get; set; }
         public string Title { get; set; } = null!;
-        public string Introdution { get; set; } = null!;
-        public string Text { get; set; } = null!;
-        public float Rating { get; set; }
+        public string? Introdution { get; set; }
+        public string? Text { get; set; }
+        public float? Rating { get; set; }
         public string Portion { get; set; } = null!;
         public string AuthorId { get; set; } = null!;
         public string PreparingTime { get; set; } = null!;

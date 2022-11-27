@@ -250,7 +250,7 @@ namespace HomeCook.Services
                 throw new AuthException(AuthException.InvalidLoginAttempt);
             }
             var info = new UserLoginInfo(externalAuth.Provider, payload.Subject, externalAuth.Provider);
-
+            
             var user = await userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
 
             if (user == null)

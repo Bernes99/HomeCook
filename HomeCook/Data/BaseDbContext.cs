@@ -121,6 +121,8 @@ namespace HomeCook.Data
 
                 entity.Property(e => e.Name).HasMaxLength(65535);
 
+                entity.Property(e => e.Path).HasMaxLength(65535);
+
                 entity.Property(e => e.PublicId)
                     .HasMaxLength(36)
                     .IsFixedLength();
@@ -224,6 +226,8 @@ namespace HomeCook.Data
                 entity.Property(e => e.Id).UseIdentityAlwaysColumn();
 
                 entity.Property(e => e.Name).HasMaxLength(65535);
+
+                entity.Property(e => e.Path).HasMaxLength(65535);
 
                 entity.Property(e => e.PublicId)
                     .HasMaxLength(36)

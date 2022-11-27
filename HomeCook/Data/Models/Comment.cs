@@ -15,7 +15,7 @@ namespace HomeCook.Data.Models
         public string AuthorId { get; set; } = null!;
         public DateTime? DateDeletedUtc { get; set; }
         public string? DeletedBy { get; set; }
-        public string Text { get; set; } = null!;
+        public string? Text { get; set; }
 
         public virtual ICollection<CommentsRecipe> CommentsRecipes { get; set; }
     }

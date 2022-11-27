@@ -124,7 +124,7 @@ namespace HomeCook.Data.Migrations
                    .WithColumn("RecipeId").AsInt64()
                         .ForeignKey("FK_RecipesImages_RecipeId", "App", "Recipes", "Id")
                    .WithColumn("Name").AsText().Nullable()
-                   .WithColumn("Value").AsInt64Text();
+                   .WithColumn("Value").AsBinary().Nullable();
             }
 
             if (!Schema.Table("ProfileImages").Exists())
@@ -134,7 +134,7 @@ namespace HomeCook.Data.Migrations
                    .WithPublicId()
                    .WithColumn("UserId").AsFixedLengthAnsiString(36)
                    .WithColumn("Name").AsText().Nullable()
-                   .WithColumn("Value").AsInt64Text();
+                   .WithColumn("Value").AsBinary().Nullable();
             }
 
             if (!Schema.Table("UserProducts").Exists())
