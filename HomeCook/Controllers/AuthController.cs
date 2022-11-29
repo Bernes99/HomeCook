@@ -152,33 +152,7 @@ namespace HomeCook.Controllers
             return Ok(status);
         }
 
-        [HttpGet("GetAllUsers")]
-        public async Task<ActionResult> GetAllUsers([FromQuery] PaginationQuery query)
-        {
-            var users = AuthService.GetUsers(query);
-            return Ok(users);
-        }
-        [HttpPost("DeleteUser/{Id}")]
-        public async Task<ActionResult> DeleteUser([FromRoute] string Id)
-        {
-            var result = await AuthService.DeleteUser(Id);
-            if (result.Succeeded)
-            {
-                return Ok();
-            }
-            return StatusCode(500, result.Errors);
-        }
-
-        [HttpPost("UpdateUser/{Id}")]
-        public async Task<ActionResult> UpdateUser([FromRoute] string Id, [FromForm] UserUpdateDto model)
-        {
-            var result = await AuthService.UpdateUser(Id, model);
-            if (result.Succeeded)
-            {
-                return Ok();
-            }
-            return StatusCode(500, result.Errors);
-        }
+        
 
 
         [HttpGet("test")]

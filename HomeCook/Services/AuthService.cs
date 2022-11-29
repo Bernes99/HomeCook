@@ -33,27 +33,31 @@ namespace HomeCook.Services
     {
         private AuthenticationSettings AuthSettings { get; }
         private IPasswordHasher<AppUser> PasswordHasher { get; }
-        private UserManager<AppUser> userManager;
-        private SignInManager<AppUser> signInManager;
+        private UserManager<AppUser> _userManager;
+        private SignInManager<AppUser> _signInManager;
         private readonly IConfigurationSection GoolgeSettings;
         private readonly IConfiguration Configuration;
         private IEmailService _emailService;
+        private readonly IUserService _userService;
+
         public AuthService(DefaultDbContext context, SignInManager<AppUser> signInManager,
             UserManager<AppUser> userManager, 
             IPasswordHasher<AppUser> passwordHasher, 
             IMapper mapper,
             IConfiguration configuration,
             IEmailService emailService,
+            IUserService userService,
             AuthenticationSettings authSettings) : base(context, mapper)
         {
             AuthSettings = authSettings;
             PasswordHasher = passwordHasher;
 
-            this.signInManager = signInManager;
-            this.userManager = userManager;
+            _signInManager = signInManager;
+            _userManager = userManager;
             Configuration = configuration;
             GoolgeSettings = Configuration.GetSection("Authentication:Google");
             _emailService = emailService;
+            _userService = userService;
 
         }
 
@@ -83,7 +87,7 @@ namespace HomeCook.Services
 
             user.RefreshToken = refreshToken;
             user.RefreshTokenExpiryTime = DateTime.Now.AddHours(AuthSettings.RefreshTokenExpireHours);
-            await userManager.UpdateAsync(user);
+            await _userManager.UpdateAsync(user);
 
             return new AuthenticationResponse
             {
@@ -97,47 +101,40 @@ namespace HomeCook.Services
 
         public async Task<AuthenticationResponse?> Login(LoginDto model)
         {
-            var user = await FindUserAsync(model.Login);
+            var user = await _userService.FindUserAsync(model.Login);
 
             if (user is null)
             {
                 return null;
             }
-            await signInManager.SignOutAsync();
-            var passwordCheck = await signInManager.UserManager.CheckPasswordAsync(user, model.Password);
-            var result = await signInManager.PasswordSignInAsync(user, model.Password, model.remenberLogin, true);
+            await _signInManager.SignOutAsync();
+            var passwordCheck = await _signInManager.UserManager.CheckPasswordAsync(user, model.Password);
+            var result = await _signInManager.PasswordSignInAsync(user, model.Password, model.remenberLogin, true);
 
             if (!result.Succeeded)
             {
                 throw new AuthException(AuthException.InvalidLoginAttempt);
             }
-            if (await userManager.IsLockedOutAsync(user) && passwordCheck)
+            if (await _userManager.IsLockedOutAsync(user) && passwordCheck)
             {
                 throw new UnauthorizedAccessException("Locked");
             }
             var tokens = await CreateJwtTokens(user);
 
             user.LastLogin = DateTime.Now;
-            await userManager.UpdateAsync(user);
+            await _userManager.UpdateAsync(user);
 
             return tokens;
         }
         
         public async Task Logout()
         {
-            await signInManager.SignOutAsync();
+            await _signInManager.SignOutAsync();
         }
-        public async Task<AppUser> FindUserAsync(string emailAddress)
-        {
-            return await userManager.FindByEmailAsync(emailAddress) ?? await userManager.FindByNameAsync(emailAddress);
-        }
-        public async Task<AppUser> FindUserAsyncbyId(string userId)
-        {
-            return await userManager.FindByIdAsync(userId);
-        }
+
         public async Task<IList<Claim>> GetUserClaimsAsync(AppUser user)
         {
-            return await userManager.GetClaimsAsync(user);
+            return await _userManager.GetClaimsAsync(user);
         }
         public async Task<AppUser> Register(RegisterDto registerDto)
         {
@@ -149,7 +146,7 @@ namespace HomeCook.Services
             };
             try
             {
-                var result = await userManager.CreateAsync(newUser, registerDto.Password);
+                var result = await _userManager.CreateAsync(newUser, registerDto.Password);
                 if (!result.Succeeded)
                 {
                     throw new AuthException(result.Errors.ToArray());
@@ -161,25 +158,25 @@ namespace HomeCook.Services
                 new Claim(ClaimTypes.NameIdentifier, registerDto.Email),
                 new Claim("PublicId", newUser.Id)
             };
-                result = await userManager.AddClaimsAsync(newUser, claims);
+                result = await _userManager.AddClaimsAsync(newUser, claims);
                 if (result.Succeeded)
                 {
-                    var emailVerificationCode = HttpUtility.UrlEncode(await userManager.GenerateEmailConfirmationTokenAsync(newUser));
+                    var emailVerificationCode = HttpUtility.UrlEncode(await _userManager.GenerateEmailConfirmationTokenAsync(newUser));
                     await _emailService.SendEmailConfirmationEmail(newUser, emailVerificationCode);
-                    await signInManager.SignInAsync(newUser, isPersistent: registerDto.RemenberLogin);
+                    await _signInManager.SignInAsync(newUser, isPersistent: registerDto.RemenberLogin);
 
                     return newUser;
                 }
                 else
                 {
-                    await userManager.DeleteAsync(newUser);
+                    await _userManager.DeleteAsync(newUser);
                     //throw new AuthException(AuthException.UserAlreadyExist);
                     throw new Exception(AuthException.UserAlreadyExist);
                 }
             }
             catch (Exception)
             {
-                await userManager.DeleteAsync(newUser);
+                await _userManager.DeleteAsync(newUser);
                 throw;
             }
             
@@ -205,7 +202,7 @@ namespace HomeCook.Services
 
         public async Task<AuthenticationResponse> Refresh(string refreshToken)
         {
-            var user = userManager.Users.FirstOrDefault(r => r.RefreshToken == refreshToken);
+            var user = _userManager.Users.FirstOrDefault(r => r.RefreshToken == refreshToken);
             if (user == null || user.RefreshTokenExpiryTime < DateTime.Now)
             {
                 throw new AuthException(AuthException.InvalidRefreshToken);
@@ -235,11 +232,11 @@ namespace HomeCook.Services
 
         public AuthenticationProperties ConfigureExternalAuthProp(string provider, string redirectUrl)
         {
-            return signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+            return _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
         }
         public async Task<ExternalLoginInfo> GetExternalLoginInfo()
         {
-            return await signInManager.GetExternalLoginInfoAsync();
+            return await _signInManager.GetExternalLoginInfoAsync();
             
         }
         public async Task<AuthenticationResponse> ExternalLogin(ExternalAuthDto externalAuth)
@@ -252,16 +249,16 @@ namespace HomeCook.Services
             }
             var info = new UserLoginInfo(externalAuth.Provider, payload.Subject, externalAuth.Provider);
             
-            var user = await userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
+            var user = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
 
             if (user == null)
             {
-                user = await userManager.FindByEmailAsync(payload.Email);
+                user = await _userManager.FindByEmailAsync(payload.Email);
                 if (user == null)
                 {
                     user = new AppUser { Email = payload.Email, UserName = payload.Email, surname = payload.FamilyName, firstName = payload.GivenName,EmailConfirmed = true };
 
-                    await userManager.CreateAsync(user);
+                    await _userManager.CreateAsync(user);
                     
                     var claims = new[] {
                     new Claim(ClaimTypes.Actor, ClaimType.User.ToString()),
@@ -269,11 +266,11 @@ namespace HomeCook.Services
                     new Claim(ClaimTypes.NameIdentifier, payload.Email),
                     new Claim("PublicId", user.Id)
                        };
-                    await userManager.AddClaimsAsync(user, claims);
+                    await _userManager.AddClaimsAsync(user, claims);
 
                     //prepare and send an email for the email confirmation
                     //await userManager.AddToRoleAsync(user, "Viewer");
-                    await userManager.AddLoginAsync(user, info);
+                    await _userManager.AddLoginAsync(user, info);
 
                     #region update profile image
                     var profileImage = Context.ProfileImages.FirstOrDefault(x => x.UserId == user.Id);
@@ -300,17 +297,17 @@ namespace HomeCook.Services
                 }
                 else
                 {
-                    await userManager.AddLoginAsync(user, info);
+                    await _userManager.AddLoginAsync(user, info);
                 }
             }
             if (user == null)
                 throw new AuthException(AuthException.InvalidLoginAttempt);
 
-            await signInManager.SignInAsync(user, false);
+            await _signInManager.SignInAsync(user, false);
             var tokens = await CreateJwtTokens(user);
 
             user.LastLogin = DateTime.Now;
-            await userManager.UpdateAsync(user);
+            await _userManager.UpdateAsync(user);
 
             return tokens;
 
@@ -318,117 +315,33 @@ namespace HomeCook.Services
 
         public async Task<IdentityResult> ConfirmEmailAddress(string userId, string code)
         {
-            var user = await userManager.FindByIdAsync(userId);
+            var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
                 return IdentityResult.Failed();
 
-            return await userManager.ConfirmEmailAsync(user, code);
+            return await _userManager.ConfirmEmailAsync(user, code);
         }
 
         public async Task<IdentityResult> ForgotPassword(string email)
         {
-            var user = await userManager.FindByEmailAsync(email);
+            var user = await _userManager.FindByEmailAsync(email);
             if (user == null)
                 return IdentityResult.Failed();
             //URLEncode dlatego ze przy wysyłaniu na frodta jako query parameter sie psuje
-            var forgorPasswordCode = HttpUtility.UrlEncode(await userManager.GeneratePasswordResetTokenAsync(user));
+            var forgorPasswordCode = HttpUtility.UrlEncode(await _userManager.GeneratePasswordResetTokenAsync(user));
             await _emailService.SendForgotPasswordEmail(user, forgorPasswordCode);
             return IdentityResult.Success;
         }
         public async Task<IdentityResult> ResetPassword(ResetPasswordDto resetPassword)
         {
-            var user = await userManager.FindByIdAsync(resetPassword.UserId);
+            var user = await _userManager.FindByIdAsync(resetPassword.UserId);
             if (user == null)
                 return IdentityResult.Failed();
 
-            return await userManager.ResetPasswordAsync(user, resetPassword.ResetToken, resetPassword.NewPassword);
+            return await _userManager.ResetPasswordAsync(user, resetPassword.ResetToken, resetPassword.NewPassword);
         }
 
-        public PaginationResult<UserDto> GetUsers(PaginationQuery query)
-        {
-            string searchPhrase = "";
-            if (query is not null )
-            {
-                if (query.SearchPhrase is not null)
-                {
-                    searchPhrase = query.SearchPhrase.ToUpper();
-                }
-                if (query.SortBy is not null)
-                {
-                    query.SortBy = query.SortBy.ToUpper();
-                }
-                
-            }
-            var users = Context.Users.Where(s => query.SearchPhrase == null || (s.firstName.ToUpper().Contains(searchPhrase) || s.surname.ToUpper().Contains(searchPhrase) ||
-                s.NormalizedEmail.Contains(searchPhrase)) && !s.IsDeleted);
-
-            if (!string.IsNullOrEmpty(query.SortBy))
-            {
-                var columnsSelectors = new Dictionary<string, Expression<Func<AppUser, object>>>
-                {
-                    { nameof(AppUser.firstName).ToUpper(), u => u.firstName },
-                    { nameof(AppUser.surname).ToUpper(), u => u.surname },
-                    { nameof(AppUser.Email).ToUpper(), u => u.Email },
-                    { nameof(AppUser.LastLogin).ToUpper(), u => u.LastLogin },
-                };
-                var selectedColumn = columnsSelectors[query.SortBy];
-
-                users = query.SortDirection == SortDirection.ASC ? users.OrderBy(selectedColumn) : users.OrderByDescending(selectedColumn);
-            }
-
-            var pagedUsers = users
-                .Skip(query.PageSize * (query.PageNumber - 1))
-                .Take(query.PageSize);
-
-            var usersDto = Mapper.Map<List<UserDto>>(pagedUsers);
-
-            var usersCount = users.Count();
-            var result = new PaginationResult<UserDto>(usersDto, usersCount, query.PageSize, query.PageNumber);
-            return result;
-        }
-
-        public async Task<IdentityResult> DeleteUser(string userId)
-        {
-            var user = await FindUserAsyncbyId(userId);
-
-            if (user is null)
-            {
-                throw new AuthException(AuthException.UserDoesNotExist);
-            }
-            user.IsDeleted = true;
-            return await userManager.UpdateAsync(user);
-
-        }
-        public async Task<IdentityResult> UpdateUser(string userId, UserUpdateDto model)
-        {
-            var user = await FindUserAsyncbyId(userId);
-
-            if (user is null)
-            {
-                throw new AuthException(AuthException.UserDoesNotExist);
-            }
-            if (model is null)
-            {
-                throw new AuthException(AuthException.BadRequest);
-            }
-
-            user.firstName = model.FirstName ?? user.firstName ?? null;
-            user.surname = model.Surname ?? user.surname ?? null;
-            user.UserName = model.UserName ?? user.UserName ?? null;
-            user.Email = model.Email ?? user.Email ?? null;
-
-            if (string.IsNullOrEmpty(model.Email))
-            {
-                await userManager.UpdateNormalizedEmailAsync(user);
-            }
-            if (string.IsNullOrEmpty(model.UserName))
-            {
-                await userManager.UpdateNormalizedUserNameAsync(user);
-            }
-
-            return await userManager.UpdateAsync(user);
-
-        }
+        
 
         
     }

@@ -144,6 +144,7 @@ builder.Services.AddScoped<IWeatherForecastService, WeatherForecastService>();
 builder.Services.AddScoped<RoleSeeder>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IImageService,ImageService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 //to google auth
 builder.Services.Configure<CookiePolicyOptions>(options =>
