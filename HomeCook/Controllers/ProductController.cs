@@ -20,12 +20,16 @@ namespace HomeCook.Controllers
         }
         #region ProductCategory CRUD
         [HttpPost("AddProductCategory")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+            Roles = "Admin")]
         public async Task<ActionResult> AddProductCategory(string CategoryName)
         {
             await _productService.AddProductCategory(CategoryName);
             return Ok();
         }
         [HttpPost("UpdateProductCategory")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+            Roles = "Admin")]
         public async Task<ActionResult> UpdateProductCategory([FromBody] ProductCategoryDto newProductCategory)
         {
             await _productService.UpdateProductCategory(newProductCategory);
@@ -33,6 +37,8 @@ namespace HomeCook.Controllers
         }
 
         [HttpDelete("DeleteProductCategory/{Id}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+            Roles = "Admin")]
         public async Task<ActionResult> DeleteProductCategory(string Id)
         {
             _productService.DeleteProductCategory(Id);
