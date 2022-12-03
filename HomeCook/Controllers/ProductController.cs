@@ -59,5 +59,14 @@ namespace HomeCook.Controllers
             return Ok(result);
         }
         #endregion
+
+        //[HttpPost("AddProductCategory")]
+        //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+        //    Roles = "Admin")]
+        //public async Task<ActionResult> AddProduct([FromBody] )
+        //{
+        //    await _productService.AddProductCategory(CategoryName);
+        //    return Ok();
+        //}
     }
 }

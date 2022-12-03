@@ -50,19 +50,25 @@ namespace HomeCook.Data
             {
                 entity.ToTable("Categories", "App");
 
+                entity.HasIndex(e => e.PublicId, "IX_Categories_PublicId")
+                    .IsUnique();
+
                 entity.Property(e => e.Id).UseIdentityAlwaysColumn();
 
                 entity.Property(e => e.Name).HasMaxLength(65535);
 
                 entity.Property(e => e.PublicId)
                     .HasMaxLength(36)
-                    .HasDefaultValueSql("'12dc7bcb-7e6f-4a60-b2eb-caa51c16262b'::bpchar")
+                    .HasDefaultValueSql("(uuid_generate_v1())::character(36)")
                     .IsFixedLength();
             });
 
             modelBuilder.Entity<Comment>(entity =>
             {
                 entity.ToTable("Comments", "App");
+
+                entity.HasIndex(e => e.PublicId, "IX_Comments_PublicId")
+                    .IsUnique();
 
                 entity.Property(e => e.Id).UseIdentityAlwaysColumn();
 
@@ -78,7 +84,7 @@ namespace HomeCook.Data
 
                 entity.Property(e => e.PublicId)
                     .HasMaxLength(36)
-                    .HasDefaultValueSql("'6d26e836-7e58-4a70-a05c-abc1268b1746'::bpchar")
+                    .HasDefaultValueSql("(uuid_generate_v1())::character(36)")
                     .IsFixedLength();
             });
 
@@ -86,11 +92,14 @@ namespace HomeCook.Data
             {
                 entity.ToTable("CommentsRecipe", "App");
 
+                entity.HasIndex(e => e.PublicId, "IX_CommentsRecipe_PublicId")
+                    .IsUnique();
+
                 entity.Property(e => e.Id).UseIdentityAlwaysColumn();
 
                 entity.Property(e => e.PublicId)
                     .HasMaxLength(36)
-                    .HasDefaultValueSql("'12e71f63-f215-4070-9a5c-0c528fabec6e'::bpchar")
+                    .HasDefaultValueSql("(uuid_generate_v1())::character(36)")
                     .IsFixedLength();
 
                 entity.HasOne(d => d.Comment)
@@ -110,19 +119,31 @@ namespace HomeCook.Data
             {
                 entity.ToTable("Products", "App");
 
+                entity.HasIndex(e => e.PublicId, "IX_Products_PublicId")
+                    .IsUnique();
+
                 entity.Property(e => e.Id).UseIdentityAlwaysColumn();
 
                 entity.Property(e => e.Name).HasMaxLength(128);
 
                 entity.Property(e => e.PublicId)
                     .HasMaxLength(36)
-                    .HasDefaultValueSql("'c1985a7d-7e3e-4090-a87e-c4a4aac04307'::bpchar")
+                    .HasDefaultValueSql("(uuid_generate_v1())::character(36)")
                     .IsFixedLength();
+
+                entity.HasOne(d => d.Category)
+                    .WithMany(p => p.Products)
+                    .HasForeignKey(d => d.CategoryId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Product_CategoryId");
             });
 
             modelBuilder.Entity<ProductCategory>(entity =>
             {
                 entity.ToTable("ProductCategory", "App");
+
+                entity.HasIndex(e => e.PublicId, "IX_ProductCategory_PublicId")
+                    .IsUnique();
 
                 entity.Property(e => e.Id).UseIdentityAlwaysColumn();
 
@@ -130,13 +151,16 @@ namespace HomeCook.Data
 
                 entity.Property(e => e.PublicId)
                     .HasMaxLength(36)
-                    .HasDefaultValueSql("'a10ee241-3a1d-4e7e-a34c-39cd4146ff80'::bpchar")
+                    .HasDefaultValueSql("(uuid_generate_v1())::character(36)")
                     .IsFixedLength();
             });
 
             modelBuilder.Entity<ProfileImage>(entity =>
             {
                 entity.ToTable("ProfileImages", "App");
+
+                entity.HasIndex(e => e.PublicId, "IX_ProfileImages_PublicId")
+                    .IsUnique();
 
                 entity.Property(e => e.Id).UseIdentityAlwaysColumn();
 
@@ -146,7 +170,7 @@ namespace HomeCook.Data
 
                 entity.Property(e => e.PublicId)
                     .HasMaxLength(36)
-                    .HasDefaultValueSql("'6cedf967-2fde-4b2b-8c11-8c63440a8c53'::bpchar")
+                    .HasDefaultValueSql("(uuid_generate_v1())::character(36)")
                     .IsFixedLength();
 
                 entity.Property(e => e.UserId)
@@ -157,6 +181,9 @@ namespace HomeCook.Data
             modelBuilder.Entity<Recipe>(entity =>
             {
                 entity.ToTable("Recipes", "App");
+
+                entity.HasIndex(e => e.PublicId, "IX_Recipes_PublicId")
+                    .IsUnique();
 
                 entity.Property(e => e.Id).UseIdentityAlwaysColumn();
 
@@ -188,7 +215,7 @@ namespace HomeCook.Data
 
                 entity.Property(e => e.PublicId)
                     .HasMaxLength(36)
-                    .HasDefaultValueSql("'8e9a1d79-ead9-47ba-8da0-0a3c91824827'::bpchar")
+                    .HasDefaultValueSql("(uuid_generate_v1())::character(36)")
                     .IsFixedLength();
 
                 entity.Property(e => e.Title).HasMaxLength(65535);
@@ -198,13 +225,16 @@ namespace HomeCook.Data
             {
                 entity.ToTable("RecipeProduct", "App");
 
+                entity.HasIndex(e => e.PublicId, "IX_RecipeProduct_PublicId")
+                    .IsUnique();
+
                 entity.Property(e => e.Id).UseIdentityAlwaysColumn();
 
                 entity.Property(e => e.Amount).HasMaxLength(65535);
 
                 entity.Property(e => e.PublicId)
                     .HasMaxLength(36)
-                    .HasDefaultValueSql("'3d9d7a67-64a4-448a-ab0e-eb749b40f339'::bpchar")
+                    .HasDefaultValueSql("(uuid_generate_v1())::character(36)")
                     .IsFixedLength();
 
                 entity.HasOne(d => d.Product)
@@ -224,11 +254,14 @@ namespace HomeCook.Data
             {
                 entity.ToTable("RecipesCategories", "App");
 
+                entity.HasIndex(e => e.PublicId, "IX_RecipesCategories_PublicId")
+                    .IsUnique();
+
                 entity.Property(e => e.Id).UseIdentityAlwaysColumn();
 
                 entity.Property(e => e.PublicId)
                     .HasMaxLength(36)
-                    .HasDefaultValueSql("'f5e67b96-e2ab-478a-8774-d030f2d902bb'::bpchar")
+                    .HasDefaultValueSql("(uuid_generate_v1())::character(36)")
                     .IsFixedLength();
 
                 entity.HasOne(d => d.Category)
@@ -248,6 +281,9 @@ namespace HomeCook.Data
             {
                 entity.ToTable("RecipesImages", "App");
 
+                entity.HasIndex(e => e.PublicId, "IX_RecipesImages_PublicId")
+                    .IsUnique();
+
                 entity.Property(e => e.Id).UseIdentityAlwaysColumn();
 
                 entity.Property(e => e.Name).HasMaxLength(65535);
@@ -256,7 +292,7 @@ namespace HomeCook.Data
 
                 entity.Property(e => e.PublicId)
                     .HasMaxLength(36)
-                    .HasDefaultValueSql("'02387012-67d2-456a-af61-f0dca7cdb3fa'::bpchar")
+                    .HasDefaultValueSql("(uuid_generate_v1())::character(36)")
                     .IsFixedLength();
 
                 entity.HasOne(d => d.Recipe)
@@ -270,11 +306,14 @@ namespace HomeCook.Data
             {
                 entity.ToTable("RecipesTags", "App");
 
+                entity.HasIndex(e => e.PublicId, "IX_RecipesTags_PublicId")
+                    .IsUnique();
+
                 entity.Property(e => e.Id).UseIdentityAlwaysColumn();
 
                 entity.Property(e => e.PublicId)
                     .HasMaxLength(36)
-                    .HasDefaultValueSql("'eb90d578-e3dc-4516-937b-685456b9137f'::bpchar")
+                    .HasDefaultValueSql("(uuid_generate_v1())::character(36)")
                     .IsFixedLength();
 
                 entity.HasOne(d => d.Recipe)
@@ -294,19 +333,25 @@ namespace HomeCook.Data
             {
                 entity.ToTable("Tags", "App");
 
+                entity.HasIndex(e => e.PublicId, "IX_Tags_PublicId")
+                    .IsUnique();
+
                 entity.Property(e => e.Id).UseIdentityAlwaysColumn();
 
                 entity.Property(e => e.Name).HasMaxLength(65535);
 
                 entity.Property(e => e.PublicId)
                     .HasMaxLength(36)
-                    .HasDefaultValueSql("'5f90806c-65ac-4e60-a3c9-a71418671083'::bpchar")
+                    .HasDefaultValueSql("(uuid_generate_v1())::character(36)")
                     .IsFixedLength();
             });
 
             modelBuilder.Entity<UserProduct>(entity =>
             {
                 entity.ToTable("UserProducts", "App");
+
+                entity.HasIndex(e => e.PublicId, "IX_UserProducts_PublicId")
+                    .IsUnique();
 
                 entity.Property(e => e.Id).UseIdentityAlwaysColumn();
 
@@ -316,7 +361,7 @@ namespace HomeCook.Data
 
                 entity.Property(e => e.PublicId)
                     .HasMaxLength(36)
-                    .HasDefaultValueSql("'23cd273d-e4df-49b6-ae68-548d44b1c384'::bpchar")
+                    .HasDefaultValueSql("(uuid_generate_v1())::character(36)")
                     .IsFixedLength();
 
                 entity.Property(e => e.UserId)

@@ -144,6 +144,7 @@ namespace HomeCook.Data.Migrations
                    .WithId()
                    .WithPublicId()
                    .WithColumn("UserId").AsFixedLengthAnsiString(36)
+                        .ForeignKey("FK_UserProducts_UserId", "public", "AspNetUsers", "Id")
                     .WithColumn("ProductId").AsInt64()
                         .ForeignKey("FK_UserProducts_ProductId", "App", "Products", "Id")
                    .WithColumn("ExpirationDate").AsDateTime2().Nullable()
