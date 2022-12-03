@@ -145,6 +145,7 @@ builder.Services.AddScoped<ProductCategorySeeder>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IImageService,ImageService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IProductService, ProductService>();
 
 //to google auth
 builder.Services.Configure<CookiePolicyOptions>(options =>

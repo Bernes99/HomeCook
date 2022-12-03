@@ -32,7 +32,7 @@ namespace HomeCook.Controllers
             var users = _userService.GetUsers(query);
             return Ok(users);
         }
-        [HttpPost("{Id}/DeleteUser")]
+        [HttpDelete("{Id}/DeleteUser")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
             Roles = "Admin,User")]
         public async Task<ActionResult> DeleteUser([FromRoute] string Id)

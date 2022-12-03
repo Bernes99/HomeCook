@@ -19,8 +19,7 @@ namespace HomeCook.Services
 
         public UserService(DefaultDbContext context,
             UserManager<AppUser> userManager,
-            IMapper mapper,
-            AuthenticationSettings authSettings) : base(context, mapper)
+            IMapper mapper) : base(context, mapper)
         {
             _userManager = userManager;
         }
