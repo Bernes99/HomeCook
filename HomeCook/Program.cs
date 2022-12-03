@@ -141,7 +141,7 @@ AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true); // to correc
 builder.Services.AddScoped<IPasswordHasher<AppUser>, PasswordHasher<AppUser>>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IWeatherForecastService, WeatherForecastService>();
-builder.Services.AddScoped<RoleSeeder>();
+builder.Services.AddScoped<ProductCategorySeeder>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IImageService,ImageService>();
 builder.Services.AddScoped<IUserService, UserService>();
@@ -177,8 +177,9 @@ var app = builder.Build();
 
 // Tutaj dodawaj middleware do pipelina
 var scopeServices = app.Services.CreateScope();
-var seeder = scopeServices.ServiceProvider.GetRequiredService<RoleSeeder>();
-//seeder.Seed();
+var seeder = scopeServices.ServiceProvider.GetRequiredService<ProductCategorySeeder>();
+seeder.Seed();
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
