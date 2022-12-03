@@ -22,6 +22,7 @@ namespace HomeCook.Data
         public virtual DbSet<Comment> Comments { get; set; } = null!;
         public virtual DbSet<CommentsRecipe> CommentsRecipes { get; set; } = null!;
         public virtual DbSet<Product> Products { get; set; } = null!;
+        public virtual DbSet<ProductCategory> ProductCategories { get; set; } = null!;
         public virtual DbSet<ProfileImage> ProfileImages { get; set; } = null!;
         public virtual DbSet<Recipe> Recipes { get; set; } = null!;
         public virtual DbSet<RecipeProduct> RecipeProducts { get; set; } = null!;
@@ -116,6 +117,20 @@ namespace HomeCook.Data
                 entity.Property(e => e.PublicId)
                     .HasMaxLength(36)
                     .HasDefaultValueSql("'c1985a7d-7e3e-4090-a87e-c4a4aac04307'::bpchar")
+                    .IsFixedLength();
+            });
+
+            modelBuilder.Entity<ProductCategory>(entity =>
+            {
+                entity.ToTable("ProductCategory", "App");
+
+                entity.Property(e => e.Id).UseIdentityAlwaysColumn();
+
+                entity.Property(e => e.Name).HasMaxLength(65535);
+
+                entity.Property(e => e.PublicId)
+                    .HasMaxLength(36)
+                    .HasDefaultValueSql("'a10ee241-3a1d-4e7e-a34c-39cd4146ff80'::bpchar")
                     .IsFixedLength();
             });
 

@@ -20,7 +20,7 @@ namespace HomeCook.Data.Migrations
             //    .WithColumn("PasswordHash").AsString(250).Nullable()
             //    .WithColumn("IsAdmin").AsBoolean();
             
-            if (!Schema.Table("Products").Exists())
+            if (!Schema.Schema("App").Table("Products").Exists())
             {
                 Create.Table("Products").InSchema("App")
                     .WithId()
@@ -30,7 +30,7 @@ namespace HomeCook.Data.Migrations
                     .WithColumn("Category").AsInt32().Nullable()
                     .WithColumn("UnitType").AsInt32().Nullable();
             }
-            if (!Schema.Table("Recipes").Exists())
+            if (!Schema.Schema("App").Table("Recipes").Exists())
             {
                 Create.Table("Recipes").InSchema("App")
                     .WithId()
@@ -60,7 +60,7 @@ namespace HomeCook.Data.Migrations
                     //    .ForeignKey("FK_User_RoleId", "Role", "Id")
                     //    .OnDeleteOrUpdate(Rule.Cascade);
             }
-            if (!Schema.Table("Comments").Exists())
+            if (!Schema.Schema("App").Table("Comments").Exists())
             {
                 Create.Table("Comments").InSchema("App")
                    .WithId()
@@ -69,7 +69,7 @@ namespace HomeCook.Data.Migrations
                    .WithSoftDelete()
                    .WithColumn("Text").AsInt64Text().Nullable();
             }
-            if (!Schema.Table("CommentsRecipe").Exists())
+            if (!Schema.Schema("App").Table("CommentsRecipe").Exists())
             {
                 Create.Table("CommentsRecipe").InSchema("App")
                    .WithId()
@@ -80,14 +80,14 @@ namespace HomeCook.Data.Migrations
                         .ForeignKey("FK_CommentsRecipe_CommentId", "App", "Comments", "Id");
             }
 
-            if (!Schema.Table("Categories").Exists())
+            if (!Schema.Schema("App").Table("Categories").Exists())
             {
                 Create.Table("Categories").InSchema("App")
                    .WithId()
                    .WithPublicId()
                    .WithColumn("Name").AsText();
             }
-            if (!Schema.Table("RecipesCategories").Exists())
+            if (!Schema.Schema("App").Table("RecipesCategories").Exists())
             {
                 Create.Table("RecipesCategories").InSchema("App")
                    .WithId()
@@ -98,14 +98,14 @@ namespace HomeCook.Data.Migrations
                         .ForeignKey("FK_RecipesCategories_RecipeId", "App", "Recipes", "Id");
             }
 
-            if (!Schema.Table("Tags").Exists())
+            if (!Schema.Schema("App").Table("Tags").Exists())
             {
                 Create.Table("Tags").InSchema("App")
                    .WithId()
                    .WithPublicId()
                    .WithColumn("Name").AsText();
             }
-            if (!Schema.Table("RecipesTags").Exists())
+            if (!Schema.Schema("App").Table("RecipesTags").Exists())
             {
                 Create.Table("RecipesTags").InSchema("App")
                    .WithId()
@@ -116,7 +116,7 @@ namespace HomeCook.Data.Migrations
                         .ForeignKey("FK_RecipesTags_RecipeId", "App", "Recipes", "Id");
             }
 
-            if (!Schema.Table("RecipesImages").Exists())
+            if (!Schema.Schema("App").Table("RecipesImages").Exists())
             {
                 Create.Table("RecipesImages").InSchema("App")
                    .WithId()
@@ -127,17 +127,18 @@ namespace HomeCook.Data.Migrations
                    .WithColumn("Value").AsBinary().Nullable();
             }
 
-            if (!Schema.Table("ProfileImages").Exists())
+            if (!Schema.Schema("App").Table("ProfileImages").Exists())
             {
                 Create.Table("ProfileImages").InSchema("App")
                    .WithId()
                    .WithPublicId()
                    .WithColumn("UserId").AsFixedLengthAnsiString(36)
+                        .ForeignKey("FK_ProfileImages_UserId", "public", "AspNetUsers", "Id")
                    .WithColumn("Name").AsText().Nullable()
                    .WithColumn("Value").AsBinary().Nullable();
             }
 
-            if (!Schema.Table("UserProducts").Exists())
+            if (!Schema.Schema("App").Table("UserProducts").Exists())
             {
                 Create.Table("UserProducts").InSchema("App")
                    .WithId()
@@ -150,7 +151,7 @@ namespace HomeCook.Data.Migrations
                    .WithColumn("IsOnShoppingList").AsBoolean();
             }
 
-            if (!Schema.Table("RecipeProduct").Exists())
+            if (!Schema.Schema("App").Table("RecipeProduct").Exists())
             {
                 Create.Table("RecipeProduct").InSchema("App")
                    .WithId()
@@ -167,51 +168,51 @@ namespace HomeCook.Data.Migrations
         {
             // zachowac dobą kolejnosc usuwania tak aby nie prowowac usuwac tabel z istniejaca zaleznoscia do innej
 
-            if (!Schema.Table("Products").Exists())
+            if (!Schema.Schema("App").Table("Products").Exists())
             {
                 Delete.Table("Products").InSchema("App");
             }
-            if (!Schema.Table("Recipes").Exists())
+            if (!Schema.Schema("App").Table("Recipes").Exists())
             {
                 Delete.Table("Recipes").InSchema("App");
             }
-            if (!Schema.Table("Comments").Exists())
+            if (!Schema.Schema("App").Table("Comments").Exists())
             {
                 Delete.Table("Comments").InSchema("App");   
             }
-            if (!Schema.Table("CommentsRecipe").Exists())
+            if (!Schema.Schema("App").Table("CommentsRecipe").Exists())
             {
                 Delete.Table("CommentsRecipe").InSchema("App");
             }
-            if (!Schema.Table("Categories").Exists())
+            if (!Schema.Schema("App").Table("Categories").Exists())
             {
                 Delete.Table("Categories").InSchema("App");
             }
-            if (!Schema.Table("RecipesCategories").Exists())
+            if (!Schema.Schema("App").Table("RecipesCategories").Exists())
             {
                 Delete.Table("RecipesCategories").InSchema("App");
             }
-            if (!Schema.Table("Tags").Exists())
+            if (!Schema.Schema("App").Table("Tags").Exists())
             {
                 Delete.Table("Tags").InSchema("App");
             }
-            if (!Schema.Table("RecipesTags").Exists())
+            if (!Schema.Schema("App").Table("RecipesTags").Exists())
             {
                 Delete.Table("RecipesTags").InSchema("App");
             }
-            if (!Schema.Table("RecipesImages").Exists())
+            if (!Schema.Schema("App").Table("RecipesImages").Exists())
             {
                 Delete.Table("RecipesImages").InSchema("App");
             }
-            if (!Schema.Table("ProfileImages").Exists())
+            if (!Schema.Schema("App").Table("ProfileImages").Exists())
             {
                 Delete.Table("ProfileImages").InSchema("App");
             }
-            if (!Schema.Table("UserProducts").Exists())
+            if (!Schema.Schema("App").Table("UserProducts").Exists())
             {
                 Delete.Table("UserProducts").InSchema("App");
             }
-            if (!Schema.Table("RecipeProduct").Exists())
+            if (!Schema.Schema("App").Table("RecipeProduct").Exists())
             {
                 Delete.Table("RecipeProduct").InSchema("App");
             }
