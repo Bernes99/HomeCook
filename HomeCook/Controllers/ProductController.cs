@@ -19,7 +19,7 @@ namespace HomeCook.Controllers
             _productService = productService;
         }
         #region ProductCategory CRUD
-        [HttpPost("AddProductCategory")]
+        [HttpPost("Category/AddProductCategory")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
             Roles = "Admin")]
         public async Task<ActionResult> AddProductCategory(string CategoryName)
@@ -27,7 +27,7 @@ namespace HomeCook.Controllers
             await _productService.AddProductCategory(CategoryName);
             return Ok();
         }
-        [HttpPost("UpdateProductCategory")]
+        [HttpPost("Category/UpdateProductCategory")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
             Roles = "Admin")]
         public async Task<ActionResult> UpdateProductCategory([FromBody] ProductCategoryDto newProductCategory)
@@ -36,7 +36,7 @@ namespace HomeCook.Controllers
             return Ok();
         }
 
-        [HttpDelete("DeleteProductCategory/{Id}")]
+        [HttpDelete("Category/DeleteProductCategory/{Id}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
             Roles = "Admin")]
         public async Task<ActionResult> DeleteProductCategory([FromRoute] string Id)
@@ -45,14 +45,14 @@ namespace HomeCook.Controllers
             return Ok();
         }
 
-        [HttpGet("GetProductCategory/{Id}")]
+        [HttpGet("Category/GetProductCategory/{Id}")]
         public async Task<ActionResult> GetProductCategory([FromRoute] string Id)
         {
             var result = await _productService.GetProductCategoryDto(Id);
             return Ok(result);
         }
 
-        [HttpGet("GetProductCategoryList")]
+        [HttpGet("Category/GetProductCategoryList")]
         public async Task<ActionResult> GetProductCategory()
         {
             var result = await _productService.GetAllProductCategory();
