@@ -9,8 +9,7 @@ namespace HomeCook.Data.MappingProfiles
     {
         public ProductMappingProfile()
         {
-            CreateMap<ProductCategory, ProductCategoryDto>()
-                .ForMember( d => d.Id , m => m.MapFrom( s => s.PublicId));
+            CreateMap<AppUser, UserDto>();
 
 
         }

@@ -39,16 +39,16 @@ namespace HomeCook.Controllers
         [HttpDelete("DeleteProductCategory/{Id}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
             Roles = "Admin")]
-        public async Task<ActionResult> DeleteProductCategory(string Id)
+        public async Task<ActionResult> DeleteProductCategory([FromRoute] string Id)
         {
             _productService.DeleteProductCategory(Id);
             return Ok();
         }
 
         [HttpGet("GetProductCategory/{Id}")]
-        public async Task<ActionResult> GetProductCategory(string Id)
+        public async Task<ActionResult> GetProductCategory([FromRoute] string Id)
         {
-            var result = await _productService.GetProductCategory(Id);
+            var result = await _productService.GetProductCategoryDto(Id);
             return Ok(result);
         }
 
@@ -60,13 +60,44 @@ namespace HomeCook.Controllers
         }
         #endregion
 
-        //[HttpPost("AddProductCategory")]
-        //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
-        //    Roles = "Admin")]
-        //public async Task<ActionResult> AddProduct([FromBody] )
-        //{
-        //    await _productService.AddProductCategory(CategoryName);
-        //    return Ok();
-        //}
+        [HttpPost("AddProduct")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+            Roles = "Admin")]
+        public async Task<ActionResult> AddProduct([FromBody] ProductDto newProduct)
+        {
+            await _productService.AddProduct(newProduct);
+            return Ok();
+        }
+
+        [HttpDelete("DeleteProduct/{Id}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+            Roles = "Admin")]
+        public async Task<ActionResult> DeleteProduct([FromRoute] string Id)
+        {
+            if (String.IsNullOrEmpty(Id))
+            {
+                return BadRequest();
+            }
+            _productService.DeleteProduct(Id);
+            return Ok();
+        }
+
+        [HttpGet("GetProduct/{Id}")]
+        public async Task<ActionResult> GetProduct([FromRoute] string Id)
+        {
+            if (String.IsNullOrEmpty(Id))
+            {
+                return BadRequest();
+            }
+            var result = await _productService.GetProduct(Id);
+            return Ok(result);
+        }
+
+        [HttpGet("GetProductList")]
+        public async Task<ActionResult> GetProductList([FromQuery] string? category)
+        {
+            var result = await _productService.GetProductList(category);
+            return Ok(result);
+        }
     }
 }

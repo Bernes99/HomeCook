@@ -5,10 +5,14 @@ namespace HomeCook.Services.Interfaces
 {
     public interface IProductService
     {
+        Task<Product> AddProduct(ProductDto newProduct);
         Task<ProductCategory> AddProductCategory(string categoryName);
+        void DeleteProduct(string Id);
         void DeleteProductCategory(string Id);
         Task<List<ProductCategoryDto>> GetAllProductCategory();
-        Task<ProductCategoryDto> GetProductCategory(string Id);
+        Task<ProductDto> GetProduct(string Id);
+        Task<ProductCategoryDto> GetProductCategoryDto(string Id);
+        Task<List<ProductDto>> GetProductList(string category);
         Task<ProductCategoryDto> UpdateProductCategory(ProductCategoryDto newProductCategory);
     }
 }

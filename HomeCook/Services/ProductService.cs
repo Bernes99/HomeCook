@@ -6,6 +6,7 @@ using HomeCook.Data.Models;
 using HomeCook.DTO.Product;
 using HomeCook.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace HomeCook.Services
 {
@@ -15,7 +16,7 @@ namespace HomeCook.Services
         IMapper mapper) : base(context, mapper)
         {
         }
-        #region ProductCategory CRUD
+        #region ProductCategory
         public async Task<ProductCategory> AddProductCategory(string categoryName)
         {
             var productCategory = Context.ProductCategories.FirstOrDefault(x => x.Name == categoryName);
@@ -40,7 +41,7 @@ namespace HomeCook.Services
             Context.Remove(productCategory);
             Context.SaveChanges();
         }
-        public async Task<ProductCategoryDto> GetProductCategory(string Id)
+        public async Task<ProductCategoryDto> GetProductCategoryDto(string Id)
         {
             var productCategory = Context.ProductCategories.FirstOrDefault(x => x.PublicId == Id);
             if (productCategory is null)
@@ -77,6 +78,84 @@ namespace HomeCook.Services
             var productCategoryDto = Mapper.Map<ProductCategoryDto>(productCategory);
             return productCategoryDto;
         }
+
+        public ProductCategory FindProductCategory(string publicId)
+        {
+            var result = Context.ProductCategories.FirstOrDefault(x => x.PublicId == publicId);
+            if (result is null)
+            {
+                throw new ProductException(ProductException.ProductCategoryDoesntExist);
+            }
+            return result;
+        }
         #endregion
+
+        public async Task<Product> AddProduct(ProductDto newProduct)
+        {
+            var product = Context.Products.FirstOrDefault(x => x.Name == newProduct.Name);
+            if (product is not null)
+            {
+                throw new ProductException(ProductException.ProductAlreadyExist);
+            }
+
+            product = Mapper.Map<Product>(newProduct);
+
+            var productCategory = FindProductCategory(newProduct.CategoryId);
+            product.CategoryId = productCategory.Id;
+
+            Context.Products.Add(product);
+            Context.SaveChanges();
+
+            return product;
+        }
+
+        public void DeleteProduct(string Id)
+        {
+            var product = Context.Products.FirstOrDefault(x => x.PublicId == Id);
+            if (product is null)
+            {
+                throw new ProductException(ProductException.ProductDoesntExist);
+            }
+            Context.Remove(product);
+            Context.SaveChanges();
+        }
+
+        public async Task<ProductDto> GetProduct(string Id)
+        {
+            var product = Context.Products.Include(c => c.Category).FirstOrDefault(x => x.PublicId == Id);
+            if (product is null)
+            {
+                throw new ProductException(ProductException.ProductDoesntExist);
+            }
+
+            var productDto = Mapper.Map<ProductDto>(product);
+            return productDto;
+        }
+
+        public async Task<List<ProductDto>> GetProductList(string category)
+        {
+            var products = new List<Product>();
+            if (!String.IsNullOrEmpty(category))
+            {
+                products = Context.Products
+                    .Include(c => c.Category)
+                    .Where(x => x.Category.Name.ToUpper() == category.ToUpper())
+                    .ToList();
+            }
+            else
+            {
+                products = Context.Products
+                    .Include(c => c.Category)
+                    .ToList();
+            }
+
+            if (products is null)
+            {
+                throw new ProductException(ProductException.SomethingWentWrong);
+            }
+
+            var productListDto = Mapper.Map<List<ProductDto>>(products);
+            return productListDto;
+        }
     }
 }
