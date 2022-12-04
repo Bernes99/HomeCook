@@ -82,6 +82,15 @@ namespace HomeCook.Controllers
             return Ok();
         }
 
+        [HttpPost("UpdateProduct")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+            Roles = "Admin")]
+        public async Task<ActionResult> UpdateProduct([FromBody] ProductDto newProduct)
+        {
+            await _productService.UpdateProduct(newProduct);
+            return Ok();
+        }
+
         [HttpGet("GetProduct/{Id}")]
         public async Task<ActionResult> GetProduct([FromRoute] string Id)
         {

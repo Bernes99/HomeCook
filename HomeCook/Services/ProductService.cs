@@ -157,5 +157,24 @@ namespace HomeCook.Services
             var productListDto = Mapper.Map<List<ProductDto>>(products);
             return productListDto;
         }
+
+        public async Task<Product> UpdateProduct(ProductDto newProduct)
+        {
+            var product = Context.Products.FirstOrDefault(x => x.PublicId == newProduct.Id);
+            if (product is null)
+            {
+                throw new ProductException(ProductException.ProductDoesntExist);
+            }
+            var productCategory = FindProductCategory(newProduct.CategoryId);
+
+            product.CategoryId = productCategory?.Id ?? product.CategoryId;
+            product.Name = newProduct.Name;
+            product.Calories = newProduct.Calories ?? product.Calories;
+            product.UnitType = (int)newProduct.UnitType;
+
+            Update(product);
+
+            return product;
+        }
     }
 }

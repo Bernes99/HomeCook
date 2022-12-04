@@ -13,6 +13,7 @@ namespace HomeCook.Services.Interfaces
         Task<ProductDto> GetProduct(string Id);
         Task<ProductCategoryDto> GetProductCategoryDto(string Id);
         Task<List<ProductDto>> GetProductList(string category);
+        Task<Product> UpdateProduct(ProductDto newProduct);
         Task<ProductCategoryDto> UpdateProductCategory(ProductCategoryDto newProductCategory);
     }
 }
