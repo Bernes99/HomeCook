@@ -5,9 +5,9 @@ using HomeCook.DTO.Product;
 
 namespace HomeCook.Data.MappingProfiles
 {
-    public class ProductMappingProfile : Profile
+    public class UserMppingProfile : Profile
     {
-        public ProductMappingProfile()
+        public UserMppingProfile()
         {
             CreateMap<AppUser, UserDto>();
 

@@ -1,5 +1,6 @@
 ﻿using HomeCook.Data.Models.CustomModels;
 using HomeCook.DTO;
+using HomeCook.DTO.Product;
 using HomeCook.Services;
 using HomeCook.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -16,14 +17,16 @@ namespace HomeCook.Controllers
     {
         private readonly IUserService _userService;
         private readonly IImageService _imageService;
+        private readonly IProductService _productService;
 
-        public UserController(IUserService userService, IImageService imageService)
+        public UserController(IUserService userService, IImageService imageService, IProductService productService)
         {
             _userService = userService;
             _imageService = imageService;
+            _productService = productService;
         }
 
-
+        #region User
         [HttpGet("GetAllUsers")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
             Roles = "Admin")]
@@ -39,7 +42,7 @@ namespace HomeCook.Controllers
         {
             if (!IsSelfOrAdmin(Id))
             {
-                return BadRequest();
+                return Unauthorized();
             }
 
             var result = await _userService.DeleteUser(Id);
@@ -56,7 +59,7 @@ namespace HomeCook.Controllers
         {
             if (!IsSelfOrAdmin(Id))
             {
-                return BadRequest();
+                return Unauthorized();
             }
             
             var result = await _userService.UpdateUser(Id, model);
@@ -66,7 +69,8 @@ namespace HomeCook.Controllers
             }
             return StatusCode(500, result.Errors);
         }
-
+        #endregion
+        #region profileImage
         [HttpPost("{Id}/ProfileImage")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
             Roles = "Admin,User")]
@@ -74,7 +78,7 @@ namespace HomeCook.Controllers
         {
             if (!IsSelfOrAdmin(Id))
             {
-                return BadRequest();
+                return Unauthorized();
             }
             _imageService.UpdateProfileImage(file, Id);
             return Ok();
@@ -90,6 +94,40 @@ namespace HomeCook.Controllers
             //Byte[] b = System.IO.File.ReadAllBytes(@"C:\Users\lukas\Desktop\test.png");
             //return File(b, "image/jpeg");
         }
+        #endregion
+
+        [HttpPost("{Id}/Products/Add")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+            Roles = "Admin,User")]
+        public async Task<ActionResult> AddUserProduct([FromRoute] string Id, List<AddUserProductDto> model)
+        {
+            if (model is null || !model.Any())
+            {
+                return BadRequest();
+            }
+            if (!IsSelfOrAdmin(Id))
+            {
+                return Unauthorized();
+            }
+            await _productService.AddUserProducts(model,Id);
+            
+            return Ok();
+        }
+
+        [HttpGet("{Id}/Products/All")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+            Roles = "Admin,User")]
+        public async Task<ActionResult> GetUserProdusctsList([FromRoute] string Id)
+        {
+            if (!IsSelfOrAdmin(Id))
+            {
+                return Unauthorized();
+            }
+            var result = await _productService.GetUserProductList(Id);
+            return Ok(result);
+        }
+
+
         private bool IsSelfOrAdmin(string uesrId)
         {
             if (!User.IsInRole("Admin"))
@@ -102,5 +140,7 @@ namespace HomeCook.Controllers
             }
             return true;
         }
+
+        
     }
 }

@@ -4,9 +4,9 @@ using HomeCook.DTO.Product;
 
 namespace HomeCook.Data.MappingProfiles
 {
-    public class UserMppingProfile : Profile
+    public class ProductMappingProfile : Profile
     {
-        public UserMppingProfile()
+        public ProductMappingProfile()
         {
             CreateMap<ProductCategory, ProductCategoryDto>()
                 .ForMember(d => d.Id, m => m.MapFrom(s => s.PublicId));
@@ -18,6 +18,12 @@ namespace HomeCook.Data.MappingProfiles
             CreateMap<ProductDto, Product>()
                 .ForMember(d => d.Id, m => m.Ignore())
                 .ForMember(d => d.CategoryId, m => m.Ignore());
+
+            CreateMap<AddUserProductDto, UserProduct>()
+                .ForMember(d => d.ProductId, m => m.MapFrom(s => s.ProductInternalId));
+
+            CreateMap<UserProduct, UserProductDto>()
+                .ForMember(d => d.Id, m => m.MapFrom(s => s.PublicId));
 
         }
     }

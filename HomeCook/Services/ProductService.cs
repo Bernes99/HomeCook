@@ -7,14 +7,18 @@ using HomeCook.DTO.Product;
 using HomeCook.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Text;
 
 namespace HomeCook.Services
 {
     public class ProductService : BaseService, IProductService
     {
+        private readonly IUserService _userService;
         public ProductService(DefaultDbContext context,
-        IMapper mapper) : base(context, mapper)
+        IMapper mapper,
+        IUserService userService) : base(context, mapper)
         {
+            _userService = userService;
         }
         #region ProductCategory
         public async Task<ProductCategory> AddProductCategory(string categoryName)
@@ -176,5 +180,68 @@ namespace HomeCook.Services
 
             return product;
         }
+        #region UserProduct
+        public async Task<List<UserProduct>> AddUserProducts(List<AddUserProductDto> model, string userId)
+        {
+            //checking user
+            var user = await _userService.FindUserAsyncbyId(userId);
+            if (user is null)
+            {
+                throw new AuthException(AuthException.UserDoesNotExist);
+            }
+            //checking if product exist
+            var productIDs = Context.Products.Select(p => new KeyValuePair<long, string>(p.Id, p.PublicId)).ToDictionary(x => x.Key, x => x.Value);
+            var productsExist = model.Select(y => y.ProductId).All(productId => productIDs.Values.Contains(productId));
+            if (!productsExist)
+            {
+                throw new ProductException(ProductException.ProductDoesntExist);
+            }
+            //converting dto to model
+            var modelProducts = model.Select(x => x.ProductId).ToArray();
+            if (modelProducts.Length != modelProducts.Distinct().Count())
+            {
+                throw new ProductException(ProductException.CantAddManyOfTheSameProduscts);
+            }
+            foreach (var uProduct in model)
+            {
+                uProduct.ProductInternalId = productIDs.First(x => x.Value.Equals(uProduct.ProductId)).Key;
+            }
+            var userProducts = Mapper.Map<List<UserProduct>>(model);
+            //checking if one user didnt have product duplicates
+            var userProductsBeforeUpdate = Context.UserProducts.Where(x => x.UserId == userId).Select(x => x.Product.Id).ToArray();
+            foreach (var userProduct in userProducts)
+            {
+                if (userProductsBeforeUpdate.Contains(userProduct.ProductId))
+                {
+                    throw new ProductException(ProductException.UserAlreadyHaveThisProduct);
+                }
+                userProduct.UserId = userId;
+            }
+
+            Context.UserProducts.AddRange(userProducts);
+            SaveChanges();
+            return userProducts;
+        }
+        public async Task<List<UserProductDto>> GetUserProductList(string userId)
+        {
+            var user = await _userService.FindUserAsyncbyId(userId);
+            if (user is null)
+            {
+                throw new AuthException(AuthException.UserDoesNotExist);
+            }
+
+            var userProducts = Context.UserProducts.Include(x => x.Product).Where(x => x.UserId == userId).ToList();
+
+            var userProductsDto = Mapper.Map<List<UserProductDto>>(userProducts);
+            return userProductsDto;
+
+        }
+        //public async Task<List<UserProductDto>> DeleteUserProduct(string userId)
+        //{
+            
+
+        //}
+
+        #endregion
     }
 }
