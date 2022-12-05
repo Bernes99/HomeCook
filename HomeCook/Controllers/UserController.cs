@@ -99,7 +99,7 @@ namespace HomeCook.Controllers
         [HttpPost("{Id}/Products/Add")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
             Roles = "Admin,User")]
-        public async Task<ActionResult> AddUserProduct([FromRoute] string Id, List<AddUserProductDto> model)
+        public async Task<ActionResult> AddUserProduct([FromRoute] string Id, [FromBody]List<AddUserProductDto> model)
         {
             if (model is null || !model.Any())
             {
@@ -111,6 +111,24 @@ namespace HomeCook.Controllers
             }
             await _productService.AddUserProducts(model,Id);
             
+            return Ok();
+        }
+
+        [HttpDelete("{Id}/Products/Remove")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+            Roles = "Admin,User")]
+        public async Task<ActionResult> RemoveUserProduct([FromRoute] string Id, IdsDto model)
+        {
+            if (model is null || !model.Id.Any())
+            {
+                return BadRequest();
+            }
+            if (!IsSelfOrAdmin(Id))
+            {
+                return Unauthorized();
+            }
+            await _productService.DeleteUserProduct(model, Id);
+
             return Ok();
         }
 

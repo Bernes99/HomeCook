@@ -1,4 +1,5 @@
 ﻿using HomeCook.Data.Models;
+using HomeCook.DTO;
 using HomeCook.DTO.Product;
 
 namespace HomeCook.Services.Interfaces
@@ -10,6 +11,7 @@ namespace HomeCook.Services.Interfaces
         Task<List<UserProduct>> AddUserProducts(List<AddUserProductDto> model, string userId);
         void DeleteProduct(string Id);
         void DeleteProductCategory(string Id);
+        Task<List<UserProduct>> DeleteUserProduct(IdsDto model, string userId);
         Task<List<ProductCategoryDto>> GetAllProductCategory();
         Task<ProductDto> GetProduct(string Id);
         Task<ProductCategoryDto> GetProductCategoryDto(string Id);

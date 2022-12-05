@@ -3,6 +3,7 @@ using HomeCook.Data;
 using HomeCook.Data.CustomException;
 using HomeCook.Data.Extensions;
 using HomeCook.Data.Models;
+using HomeCook.DTO;
 using HomeCook.DTO.Product;
 using HomeCook.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
@@ -236,12 +237,21 @@ namespace HomeCook.Services
             return userProductsDto;
 
         }
-        //public async Task<List<UserProductDto>> DeleteUserProduct(string userId)
-        //{
-            
+        public async Task<List<UserProduct>> DeleteUserProduct(IdsDto model, string userId)
+        {
+            //checking user
+            var user = await _userService.FindUserAsyncbyId(userId);
+            if (user is null)
+            {
+                throw new AuthException(AuthException.UserDoesNotExist);
+            }
+           
+            var userProducts = Context.UserProducts.Where(x => model.Id.Contains(x.PublicId)).ToList();
 
-        //}
-
+            Context.UserProducts.RemoveRange(userProducts);
+            SaveChanges();
+            return userProducts;
+        }
         #endregion
     }
 }
