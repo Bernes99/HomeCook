@@ -46,7 +46,7 @@ namespace HomeCook.Services
             Context.Remove(productCategory);
             Context.SaveChanges();
         }
-        public async Task<ProductCategoryDto> GetProductCategoryDto(string Id)
+        public async Task<CategoryDto> GetProductCategoryDto(string Id)
         {
             var productCategory = Context.ProductCategories.FirstOrDefault(x => x.PublicId == Id);
             if (productCategory is null)
@@ -54,11 +54,11 @@ namespace HomeCook.Services
                 throw new ProductException(ProductException.ProductCategoryDoesntExist);
             }
 
-            var productCategoryDto = Mapper.Map<ProductCategoryDto>(productCategory);
+            var productCategoryDto = Mapper.Map<CategoryDto>(productCategory);
             return productCategoryDto;
         }
 
-        public async Task<List<ProductCategoryDto>> GetAllProductCategory()
+        public async Task<List<CategoryDto>> GetAllProductCategories()
         {
             var productCategory = Context.ProductCategories.ToList();
             if (productCategory is null)
@@ -66,10 +66,10 @@ namespace HomeCook.Services
                 throw new ProductException(ProductException.SomethingWentWrong);
             }
 
-            var productCategoryDto = Mapper.Map<List<ProductCategoryDto>>(productCategory);
+            var productCategoryDto = Mapper.Map<List<CategoryDto>>(productCategory);
             return productCategoryDto;
         }
-        public async Task<ProductCategoryDto> UpdateProductCategory(ProductCategoryDto newProductCategory)
+        public async Task<CategoryDto> UpdateProductCategory(CategoryDto newProductCategory)
         {
             var productCategory = Context.ProductCategories.FirstOrDefault(x => x.PublicId == newProductCategory.Id);
             if (productCategory is null)
@@ -80,7 +80,7 @@ namespace HomeCook.Services
             Context.ProductCategories.Update(productCategory);
             Context.SaveChanges();
 
-            var productCategoryDto = Mapper.Map<ProductCategoryDto>(productCategory);
+            var productCategoryDto = Mapper.Map<CategoryDto>(productCategory);
             return productCategoryDto;
         }
 

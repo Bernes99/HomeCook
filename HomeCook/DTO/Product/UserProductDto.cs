@@ -1,6 +1,6 @@
 ﻿namespace HomeCook.DTO.Product
 {
-    public class UserProductDto
+    public class UserProductDto 
     {
         public string Id { get; set; }
         public ProductDto Product { get; set; }

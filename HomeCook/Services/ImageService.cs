@@ -71,7 +71,42 @@ namespace HomeCook.Services
                 return profileImage.Path;
             }
             return string.Format("data:image/png;base64, {0}", Convert.ToBase64String(profileImage.Value));
+        }
 
+        //public void UpdateRecipeImage(IFormFile file, string userId)
+        //{
+        //    var profileImage = Context.ProfileImages.FirstOrDefault(x => x.UserId == userId);
+
+        //    if (file is not null && file.Length > 0)
+        //    {
+        //        using (var memoryStream = new MemoryStream())
+        //        {
+        //            file.CopyTo(memoryStream);
+        //            // Upload the file if less than 2 MB
+        //            if (memoryStream.Length < 2097152)
+        //            {
+        //                try
+        //                {
+        //                    var newPhoto = new ProfileImage()
+        //                    {
+        //                        Value = memoryStream.ToArray(),
+        //                        Name = file.FileName,
+        //                        UserId = userId,
+        //                    };
+        //                    if (profileImage is not null)
+        //                    {
+        //                        Context.ProfileImages.Remove(profileImage);
+        //                    }
+        //                    Context.ProfileImages.Add(newPhoto);
+        //                    Context.SaveChanges();
+        //                }
+        //                catch (Exception)
+        //                {
+        //                    throw new AuthException(AuthException.ProfileImageError);
+        //                }
+        //            }
+        //        }
+        //    }
         }
     }
 }

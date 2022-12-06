@@ -1,8 +1,11 @@
-﻿using Newtonsoft.Json;
+﻿using FluentValidation;
+using HomeCook.Data.Extensions;
+using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations;
 
 namespace HomeCook.DTO.Product
 {
-    public class AddUserProductDto
+    public class AddUserProductDto : IValidatableObject
     {
         public string ProductId { get; set; }
         [JsonIgnore]
@@ -10,5 +13,15 @@ namespace HomeCook.DTO.Product
         public DateTime? ExpirationDate { get; set; }
         public string? Amount { get; set; }
         public bool IsOnShoppingList { get; set; }
+
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            return this.Rules<AddUserProductDto>(v =>
+            {
+                v.RuleFor(x => x.ProductInternalId).Null();
+            })
+            .Validate(this)
+            .Result();
+        }
     }
 }

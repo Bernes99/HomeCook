@@ -12,12 +12,12 @@ namespace HomeCook.Services.Interfaces
         void DeleteProduct(string Id);
         void DeleteProductCategory(string Id);
         Task<List<UserProduct>> DeleteUserProduct(IdsDto model, string userId);
-        Task<List<ProductCategoryDto>> GetAllProductCategory();
+        Task<List<CategoryDto>> GetAllProductCategories();
         Task<ProductDto> GetProduct(string Id);
-        Task<ProductCategoryDto> GetProductCategoryDto(string Id);
+        Task<CategoryDto> GetProductCategoryDto(string Id);
         Task<List<ProductDto>> GetProductList(string category);
         Task<List<UserProductDto>> GetUserProductList(string userId);
         Task<Product> UpdateProduct(ProductDto newProduct);
-        Task<ProductCategoryDto> UpdateProductCategory(ProductCategoryDto newProductCategory);
+        Task<CategoryDto> UpdateProductCategory(CategoryDto newProductCategory);
     }
 }

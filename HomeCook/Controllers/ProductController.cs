@@ -30,7 +30,7 @@ namespace HomeCook.Controllers
         [HttpPost("Category/UpdateProductCategory")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
             Roles = "Admin")]
-        public async Task<ActionResult> UpdateProductCategory([FromBody] ProductCategoryDto newProductCategory)
+        public async Task<ActionResult> UpdateProductCategory([FromBody] CategoryDto newProductCategory)
         {
             await _productService.UpdateProductCategory(newProductCategory);
             return Ok();
@@ -55,7 +55,7 @@ namespace HomeCook.Controllers
         [HttpGet("Category/GetProductCategoryList")]
         public async Task<ActionResult> GetProductCategory()
         {
-            var result = await _productService.GetAllProductCategory();
+            var result = await _productService.GetAllProductCategories();
             return Ok(result);
         }
         #endregion
