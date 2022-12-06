@@ -20,7 +20,6 @@ namespace HomeCook.Data
 
         public virtual DbSet<Category> Categories { get; set; } = null!;
         public virtual DbSet<Comment> Comments { get; set; } = null!;
-        public virtual DbSet<CommentsRecipe> CommentsRecipes { get; set; } = null!;
         public virtual DbSet<Product> Products { get; set; } = null!;
         public virtual DbSet<ProductCategory> ProductCategories { get; set; } = null!;
         public virtual DbSet<ProfileImage> ProfileImages { get; set; } = null!;
@@ -76,6 +75,8 @@ namespace HomeCook.Data
                     .HasMaxLength(36)
                     .IsFixedLength();
 
+                entity.Property(e => e.DateCreatedUtc).HasColumnType("timestamp without time zone");
+
                 entity.Property(e => e.DateDeletedUtc).HasColumnType("timestamp without time zone");
 
                 entity.Property(e => e.DeletedBy)
@@ -86,33 +87,12 @@ namespace HomeCook.Data
                     .HasMaxLength(36)
                     .HasDefaultValueSql("(uuid_generate_v1())::character(36)")
                     .IsFixedLength();
-            });
-
-            modelBuilder.Entity<CommentsRecipe>(entity =>
-            {
-                entity.ToTable("CommentsRecipe", "App");
-
-                entity.HasIndex(e => e.PublicId, "IX_CommentsRecipe_PublicId")
-                    .IsUnique();
-
-                entity.Property(e => e.Id).UseIdentityAlwaysColumn();
-
-                entity.Property(e => e.PublicId)
-                    .HasMaxLength(36)
-                    .HasDefaultValueSql("(uuid_generate_v1())::character(36)")
-                    .IsFixedLength();
-
-                entity.HasOne(d => d.Comment)
-                    .WithMany(p => p.CommentsRecipes)
-                    .HasForeignKey(d => d.CommentId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_CommentsRecipe_CommentId");
 
                 entity.HasOne(d => d.Recipe)
-                    .WithMany(p => p.CommentsRecipes)
+                    .WithMany(p => p.Comments)
                     .HasForeignKey(d => d.RecipeId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_CommentsRecipe_RecipeId");
+                    .HasConstraintName("FK_Comments_RecipeId");
             });
 
             modelBuilder.Entity<Product>(entity =>
@@ -287,8 +267,6 @@ namespace HomeCook.Data
                 entity.Property(e => e.Id).UseIdentityAlwaysColumn();
 
                 entity.Property(e => e.Name).HasMaxLength(65535);
-
-                entity.Property(e => e.Path).HasMaxLength(65535);
 
                 entity.Property(e => e.PublicId)
                     .HasMaxLength(36)

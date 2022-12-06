@@ -10,7 +10,7 @@ namespace HomeCook.Data.Models
         public long RecipeId { get; set; }
         public string? Name { get; set; }
         public byte[]? Value { get; set; }
-        public string? Path { get; set; }
+        public bool MainPicture { get; set; }
 
         public virtual Recipe Recipe { get; set; } = null!;
     }
