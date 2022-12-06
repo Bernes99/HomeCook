@@ -182,7 +182,7 @@ namespace HomeCook.Services
             return product;
         }
         #region UserProduct
-        public async Task<List<UserProduct>> AddUserProducts(List<AddUserProductDto> model, string userId)
+        public async Task<List<UserProduct>> UpdateUserProducts(List<AddUserProductDto> model, string userId)
         {
             //checking user
             var user = await _userService.FindUserAsyncbyId(userId);
@@ -210,16 +210,30 @@ namespace HomeCook.Services
             var userProducts = Mapper.Map<List<UserProduct>>(model);
             //checking if one user didnt have product duplicates
             var userProductsBeforeUpdate = Context.UserProducts.Where(x => x.UserId == userId).Select(x => x.Product.Id).ToArray();
+
+            List<UserProduct> addUserProduct = new List<UserProduct>();
+            List<UserProduct> updateUserProduct = new List<UserProduct>();
             foreach (var userProduct in userProducts)
             {
+                userProduct.UserId = userId;
+
                 if (userProductsBeforeUpdate.Contains(userProduct.ProductId))
                 {
-                    throw new ProductException(ProductException.UserAlreadyHaveThisProduct);
+                    updateUserProduct.Add(userProduct);
                 }
-                userProduct.UserId = userId;
+                else
+                {
+                    addUserProduct.Add(userProduct);
+                }
             }
-
-            Context.UserProducts.AddRange(userProducts);
+            if (addUserProduct.Count >0)
+            {
+                Context.UserProducts.AddRange(addUserProduct);
+            }
+            if (updateUserProduct.Count > 0)
+            {
+                Context.UserProducts.UpdateRange(updateUserProduct);
+            }
             SaveChanges();
             return userProducts;
         }

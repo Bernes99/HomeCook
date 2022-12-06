@@ -96,10 +96,11 @@ namespace HomeCook.Controllers
         }
         #endregion
 
-        [HttpPost("{Id}/Products/Add")]
+
+        [HttpPost("{Id}/Products/Update")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
             Roles = "Admin,User")]
-        public async Task<ActionResult> AddUserProduct([FromRoute] string Id, [FromBody]List<AddUserProductDto> model)
+        public async Task<ActionResult> UpdateUserProduct([FromRoute] string Id, [FromBody] List<AddUserProductDto> model)
         {
             if (model is null || !model.Any())
             {
@@ -109,8 +110,8 @@ namespace HomeCook.Controllers
             {
                 return Unauthorized();
             }
-            await _productService.AddUserProducts(model,Id);
-            
+            await _productService.UpdateUserProducts(model, Id);
+
             return Ok();
         }
 
