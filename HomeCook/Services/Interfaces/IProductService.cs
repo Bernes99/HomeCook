@@ -19,5 +19,6 @@ namespace HomeCook.Services.Interfaces
         Task<List<UserProductDto>> GetUserProductList(string userId);
         Task<Product> UpdateProduct(ProductDto newProduct);
         Task<CategoryDto> UpdateProductCategory(CategoryDto newProductCategory);
+        Dictionary<long, string> FindAllPorductIds();
     }
 }

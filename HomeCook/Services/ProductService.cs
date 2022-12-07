@@ -191,7 +191,7 @@ namespace HomeCook.Services
                 throw new AuthException(AuthException.UserDoesNotExist);
             }
             //checking if product exist
-            var productIDs = Context.Products.Select(p => new KeyValuePair<long, string>(p.Id, p.PublicId)).ToDictionary(x => x.Key, x => x.Value);
+            var productIDs = FindAllPorductIds();
             var productsExist = model.Select(y => y.ProductId).All(productId => productIDs.Values.Contains(productId));
             if (!productsExist)
             {
@@ -267,5 +267,10 @@ namespace HomeCook.Services
             return userProducts;
         }
         #endregion
+
+        public Dictionary<long, string> FindAllPorductIds()
+        {
+            return Context.Products.Select(p => new KeyValuePair<long, string>(p.Id, p.PublicId)).ToDictionary(x => x.Key, x => x.Value);
+        }
     }
 }

@@ -17,7 +17,6 @@ namespace HomeCook.Data.Models
         public long Id { get; set; }
         public string PublicId { get; set; } = null!;
         public DateTime DateCreatedUtc { get; set; }
-        public string CreatedBy { get; set; } = null!;
         public DateTime? DateModifiedUtc { get; set; }
         public string? ModifiedBy { get; set; }
         public DateTime? DateDeletedUtc { get; set; }

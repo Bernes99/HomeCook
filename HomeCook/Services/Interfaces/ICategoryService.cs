@@ -7,6 +7,7 @@ namespace HomeCook.Services.Interfaces
     {
         Task<Category> AddCategory(string categoryName);
         void DeleteCategory(string publicId);
+        Dictionary<long, string> FindAllCategoriesIds();
         Category FindCategory(string publicId);
         Task<List<CategoryDto>> GetAllCategories();
         Task<CategoryDto> GetCategoryDto(string Id);

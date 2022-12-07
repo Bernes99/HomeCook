@@ -55,7 +55,7 @@ namespace HomeCook.Controllers
         [HttpPost("{Id}/UpdateUser")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
             Roles = "Admin,User")]
-        public async Task<ActionResult> UpdateUser([FromRoute] string Id, [FromForm] UserUpdateDto model)
+        public async Task<ActionResult> UpdateUser([FromRoute] string Id, [FromBody] UserUpdateDto model)
         {
             if (!IsSelfOrAdmin(Id))
             {

@@ -1,9 +1,12 @@
 ﻿using HomeCook.Data.Models;
+using HomeCook.DTO;
 using HomeCook.DTO.Product;
+using HomeCook.DTO.Recipe;
 using HomeCook.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace HomeCook.Controllers
 {
@@ -13,10 +16,12 @@ namespace HomeCook.Controllers
     public class RecipeController : Controller
     {
         private ICategoryService _categoryService;
+        private IRecipeService _recipeService;
 
-        public RecipeController(ICategoryService categoryService)
+        public RecipeController(ICategoryService categoryService, IRecipeService recipeService)
         {
             _categoryService = categoryService;
+            _recipeService = recipeService;
         }
         #region Category CRUD
         [HttpPost("Category/AddCategory")]
@@ -59,7 +64,31 @@ namespace HomeCook.Controllers
             return Ok(result);
         }
         #endregion
+        [AllowAnonymous]
+        [HttpPost("AddRecipe")]
+        public async Task<ActionResult> AddRecipe( IFormFile? mainPicture,  IFormFile?[] pictures, [FromForm][ModelBinder(BinderType = typeof(FormDataJsonModelBinder))] AddRecipeDto model)
+        {
+            var form = Request.Form;
+            //if (!IsSelfOrAdmin(model.AuthorId))
+            //{
+            //    return Unauthorized();
+            //}
+            var test = await _recipeService.AddRecipe(mainPicture, pictures, model);
 
-        
+            return Ok();
+        }
+
+        private bool IsSelfOrAdmin(string uesrId)
+        {
+            if (!User.IsInRole("Admin"))
+            {
+                var requestUserId = User.Claims.FirstOrDefault(x => x.Type == "PublicId")?.Value;
+                if (requestUserId != uesrId)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
     }
 }

@@ -146,6 +146,8 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IImageService,ImageService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<IRecipeService, RecipeService>();
 
 //to google auth
 builder.Services.Configure<CookiePolicyOptions>(options =>

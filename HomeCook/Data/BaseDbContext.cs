@@ -171,10 +171,6 @@ namespace HomeCook.Data
                     .HasMaxLength(36)
                     .IsFixedLength();
 
-                entity.Property(e => e.CreatedBy)
-                    .HasMaxLength(36)
-                    .IsFixedLength();
-
                 entity.Property(e => e.DateCreatedUtc).HasColumnType("timestamp without time zone");
 
                 entity.Property(e => e.DateDeletedUtc).HasColumnType("timestamp without time zone");
@@ -209,8 +205,6 @@ namespace HomeCook.Data
                     .IsUnique();
 
                 entity.Property(e => e.Id).UseIdentityAlwaysColumn();
-
-                entity.Property(e => e.Amount).HasMaxLength(65535);
 
                 entity.Property(e => e.PublicId)
                     .HasMaxLength(36)

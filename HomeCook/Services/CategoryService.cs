@@ -82,5 +82,10 @@ namespace HomeCook.Services
             return result;
         }
         #endregion
+
+        public Dictionary<long, string> FindAllCategoriesIds()
+        {
+            return Context.Categories.Select(p => new KeyValuePair<long, string>(p.Id, p.PublicId)).ToDictionary(x => x.Key, x => x.Value);
+        }
     }
 }

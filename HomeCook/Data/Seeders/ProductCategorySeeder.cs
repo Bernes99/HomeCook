@@ -16,7 +16,7 @@ namespace HomeCook.Data.Seeders
         {
             if (Context.Database.CanConnect())
             {
-                if (!Context.Roles.Any())
+                if (!Context.ProductCategories.Any())
                 {
                     var productCategories = GetProductCategories();
                     Context.ProductCategories.AddRange(productCategories);
