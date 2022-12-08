@@ -64,13 +64,13 @@ namespace HomeCook.Services
                 newRecipe.RecipesCategories.Add(new RecipesCategory { RecipeId = newRecipe.Id, CategoryId = categoryId.Key });
             }
 
+            Create(newRecipe);
+
             var tagsInternalIds = AddTags(model.Tags);
             foreach (var id in tagsInternalIds)
             {
                 newRecipe.RecipesTags.Add(new RecipesTag { TagId = id, RecipeId = newRecipe.Id });
             }
-
-            Create(newRecipe);
 
             _imageService.UpdateRecipeImage(mainPicture, newRecipe.Id, true);
             foreach (var picture in pictures)
@@ -164,9 +164,10 @@ namespace HomeCook.Services
             {
                 Context.AddRange(newTags);
                 SaveChanges();
+                return newTags.Select(x => x.Id).ToList();
             }
-           
-            return newTags.Select(x => x.Id).ToList();
+            return Context.Tags.Where(x=> tags.Contains(x.Name)).Select(x => x.Id).ToList();
+
         }
     }
 }
