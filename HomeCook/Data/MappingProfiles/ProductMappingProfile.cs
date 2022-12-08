@@ -15,6 +15,9 @@ namespace HomeCook.Data.MappingProfiles
                 .ForMember(d => d.Id, m => m.MapFrom(s => s.PublicId))
                 .ForMember(d => d.CategoryId, m => m.MapFrom(s => s.Category.PublicId));
 
+            CreateMap<Product, ProductResponseDto>()
+                .ForMember(d => d.Id, m => m.MapFrom(s => s.PublicId));
+
             CreateMap<ProductDto, Product>()
                 .ForMember(d => d.Id, m => m.Ignore())
                 .ForMember(d => d.CategoryId, m => m.Ignore());

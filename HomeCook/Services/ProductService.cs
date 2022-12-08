@@ -125,7 +125,7 @@ namespace HomeCook.Services
             Context.SaveChanges();
         }
 
-        public async Task<ProductDto> GetProduct(string Id)
+        public async Task<ProductResponseDto> GetProduct(string Id)
         {
             var product = Context.Products.Include(c => c.Category).FirstOrDefault(x => x.PublicId == Id);
             if (product is null)
@@ -133,11 +133,11 @@ namespace HomeCook.Services
                 throw new ProductException(ProductException.ProductDoesntExist);
             }
 
-            var productDto = Mapper.Map<ProductDto>(product);
+            var productDto = Mapper.Map<ProductResponseDto>(product);
             return productDto;
         }
 
-        public async Task<List<ProductDto>> GetProductList(string category)
+        public async Task<List<ProductResponseDto>> GetProductList(string category)
         {
             var products = new List<Product>();
             if (!String.IsNullOrEmpty(category))
@@ -159,7 +159,7 @@ namespace HomeCook.Services
                 throw new ProductException(ProductException.SomethingWentWrong);
             }
 
-            var productListDto = Mapper.Map<List<ProductDto>>(products);
+            var productListDto = Mapper.Map<List<ProductResponseDto>>(products);
             return productListDto;
         }
 

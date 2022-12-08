@@ -7,6 +7,8 @@ using HomeCook.DTO.Recipe;
 using Microsoft.AspNetCore.Mvc;
 using HomeCook.Data.CustomException;
 using System.Reflection.Metadata.Ecma335;
+using Microsoft.EntityFrameworkCore;
+using HomeCook.DTO.Product;
 
 namespace HomeCook.Services
 {
@@ -68,15 +70,73 @@ namespace HomeCook.Services
                 newRecipe.RecipesTags.Add(new RecipesTag { TagId = id, RecipeId = newRecipe.Id });
             }
 
+            Create(newRecipe);
+
             _imageService.UpdateRecipeImage(mainPicture, newRecipe.Id, true);
             foreach (var picture in pictures)
             {
                 _imageService.UpdateRecipeImage(picture, newRecipe.Id, false);
             }
-
-            Create(newRecipe);
             return newRecipe;
         }
+
+
+        public async Task<RecipeDetailsDto> GetRecipeDetails(string recipePublicId)
+        {
+            var recipe = Context.Recipes.Include(x => x.RecipeProducts).ThenInclude(x => x.Product)
+                .Include(x => x.RecipesTags).ThenInclude(x => x.Tag)
+                .Include(x => x.RecipesCategories).ThenInclude(x => x.Category)
+                .Include(x => x.Comments) // TODO to mozna pominac
+                .Include(x => x.RecipesImages).FirstOrDefault(x => x.PublicId == recipePublicId);
+            if (recipe == null)
+            {
+                throw new Exception("fail"); //TODO change Exeption
+            }
+
+            var user = Context.Users.FirstOrDefault(x => x.Id == recipe.AuthorId);
+
+            var recipeDto = Mapper.Map<RecipeDetailsDto>(recipe);
+            recipeDto.Author = Mapper.Map<RecipeUserDto>(user);
+
+            var products = new List<Product>();
+            foreach (var item in recipe.RecipeProducts)
+            {
+                products.Add(item.Product);
+            }
+            recipeDto.Products = Mapper.Map<List<ProductResponseDto>>(products);
+
+            var categories = new List<Category>();
+            foreach (var item in recipe.RecipesCategories)
+            {
+                categories.Add(item.Category);
+            }
+            recipeDto.Categories = Mapper.Map<List<CategoryDto>>(categories);
+
+            var images = new List<string>();
+            foreach (var item in recipe.RecipesImages)
+            {
+                if (item.MainPicture)
+                {
+                    recipeDto.MainImage = string.Format("data:image/png;base64, {0}", Convert.ToBase64String(item.Value));
+                }
+                else
+                {
+                    images.Add(string.Format("data:image/png;base64, {0}", Convert.ToBase64String(item.Value)));
+                } 
+            }
+            recipeDto.Images = images;
+
+            var tags = new List<Tag>();
+            foreach (var item in recipe.RecipesTags)
+            {
+                tags.Add(item.Tag);
+            }
+            recipeDto.Tags = Mapper.Map<List<TagDto>>(tags);
+
+
+            return recipeDto;
+        }
+
 
         public Dictionary<long, string> FindAllTagsIds()
         {
@@ -97,12 +157,15 @@ namespace HomeCook.Services
             {
                 if (!currentTagNames.Contains(tag))
                 {
-                    newTags.Add(new Tag { Name = tag });
+                    newTags.Add(new Tag(){ Name = tag });
                 }
             }
-            Context.Add(newTags);
-            SaveChanges();
-
+            if (newTags.Count > 0)
+            {
+                Context.AddRange(newTags);
+                SaveChanges();
+            }
+           
             return newTags.Select(x => x.Id).ToList();
         }
     }

@@ -64,18 +64,27 @@ namespace HomeCook.Controllers
             return Ok(result);
         }
         #endregion
-        [AllowAnonymous]
+        [AllowAnonymous] //TODO delete this later
         [HttpPost("AddRecipe")]
         public async Task<ActionResult> AddRecipe( IFormFile? mainPicture,  IFormFile?[] pictures, [FromForm][ModelBinder(BinderType = typeof(FormDataJsonModelBinder))] AddRecipeDto model)
         {
-            var form = Request.Form;
-            //if (!IsSelfOrAdmin(model.AuthorId))
+            //if (!IsSelfOrAdmin(model.AuthorId)) \\TODO uncomment this later
             //{
             //    return Unauthorized();
             //}
             var test = await _recipeService.AddRecipe(mainPicture, pictures, model);
 
             return Ok();
+        }
+
+        [AllowAnonymous] 
+        [HttpPost("{Id}")]
+        public async Task<ActionResult> GetRecipe([FromRoute] string Id)
+        {
+
+            var result = await _recipeService.GetRecipeDetails(Id);
+
+            return Ok(result);
         }
 
         private bool IsSelfOrAdmin(string uesrId)
