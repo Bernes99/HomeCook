@@ -176,7 +176,9 @@ namespace HomeCook.Services
 
         public void InitialIndexes()
         {
-            var recipies = Context.Recipes.ToList();
+            var recipies = Context.Recipes.Include(x => x.RecipeProducts).ThenInclude(x => x.Product)
+                .Include(x => x.RecipesTags).ThenInclude(x => x.Tag)
+                .Include(x => x.RecipesCategories).ThenInclude(x => x.Category).ToList();
             _recipeSearchEngine.AddOrUpdateRange(recipies);
         }
     }

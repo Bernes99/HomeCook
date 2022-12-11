@@ -191,7 +191,7 @@ seeder.Seed();
 
 var recipeService = scopeServices.ServiceProvider.GetRequiredService<IRecipeService>();
 recipeService.InitialIndexes();
-var test = scopeServices.ServiceProvider.GetRequiredService<IRecipeSearchEngine>().Search("jajecznica", null);
+var test = scopeServices.ServiceProvider.GetRequiredService<IRecipeSearchEngine>().Search("testowa1", null);
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

@@ -235,11 +235,21 @@ namespace HomeCook.Data.Extensions.SearchEngine
             string searchString,
             RecipeFilters filters)
         {
-            var searchResultItems =
-                new List<LuceneRecipeSearchResultItem>();
-            var queryParser = new MultiFieldQueryParser(version, FieldKeys.ToArray(), Analyzer);
             
-            var query = CreateFilteredQuery(filters, queryParser.Parse(searchString));
+            
+            var queryParser = new MultiFieldQueryParser(version, FieldKeys.ToArray(), Analyzer);
+
+            Query query;
+            if (string.IsNullOrEmpty(searchString))
+            {
+                MatchAllDocsQuery matchAllDocs = new MatchAllDocsQuery();
+                query = CreateFilteredQuery(filters, matchAllDocs);
+            }
+            else
+            {
+                query = CreateFilteredQuery(filters, queryParser.Parse(searchString));
+            }
+            
 
             if (query is null)
             {
@@ -284,11 +294,21 @@ namespace HomeCook.Data.Extensions.SearchEngine
 
             foreach (var product in filters.Products)
             {
-                bQuery.Add(new TermQuery(new Term(IndexField.Product.ToString(), product)), Occur.MUST);
+                bQuery.Add(new TermQuery(new Term(IndexField.Product.ToString(), product)), Occur.SHOULD);
             }
             foreach (var category in filters.CategoryNames)
             {
                 bQuery.Add(new TermQuery(new Term(IndexField.Category.ToString(), category)), Occur.MUST);
+            }
+            if (filters.Rating > 1f)
+            {
+                var ratingFilter = NumericRangeFilter.NewSingleRange(IndexField.Rating.ToString(),filters.Rating,null,true,false);
+                bQuery.Add(new FilteredQuery(bQuery,ratingFilter),Occur.SHOULD);
+            }
+            if (filters.Difficulty > 1f)
+            {
+                var difFilter = NumericRangeFilter.NewSingleRange(IndexField.Difficulty.ToString(), filters.Difficulty, null, true, false);
+                bQuery.Add(new FilteredQuery(bQuery, difFilter), Occur.SHOULD);
             }
             bQuery.Add(criteria, Occur.MUST);
 
