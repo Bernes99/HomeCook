@@ -2,6 +2,7 @@ using FluentMigrator.Runner;
 using HomeCook;
 using HomeCook.Data;
 using HomeCook.Data.Extensions;
+using HomeCook.Data.Extensions.SearchEngine;
 using HomeCook.Data.Models;
 using HomeCook.Data.Seeders;
 using HomeCook.Services;
@@ -149,6 +150,10 @@ builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IRecipeService, RecipeService>();
 
+builder.Services.AddSingleton<IRecipeSearchEngine, RecipeSearchEngine>();
+//builder.Services.AddScoped<IRecipeIndex, RecipeIndex>();
+//builder.Services.AddScoped<ILuceneWriter, LuceneWriter>();
+
 //to google auth
 builder.Services.Configure<CookiePolicyOptions>(options =>
 {
@@ -178,11 +183,15 @@ using (var scope = serviceProvider.CreateScope())
 
 var app = builder.Build();
 
+
 // Tutaj dodawaj middleware do pipelina
 var scopeServices = app.Services.CreateScope();
 var seeder = scopeServices.ServiceProvider.GetRequiredService<ProductCategorySeeder>();
 seeder.Seed();
 
+var recipeService = scopeServices.ServiceProvider.GetRequiredService<IRecipeService>();
+recipeService.InitialIndexes();
+var test = scopeServices.ServiceProvider.GetRequiredService<IRecipeSearchEngine>().Search("jajecznica", null);
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

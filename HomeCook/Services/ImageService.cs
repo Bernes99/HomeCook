@@ -121,5 +121,28 @@ namespace HomeCook.Services
                 }
             }
         }
+        public string GetrecipeMainImage(string recipePublicId)
+        {
+            var recipe = Context.Recipes.FirstOrDefault(x => x.PublicId == recipePublicId);
+            if (recipe == null)
+            {
+                throw new NullReferenceException(); //TODO 
+            }
+            return GetrecipeMainImage(recipe.Id);
+        }
+        public string GetrecipeMainImage(long recipeId)
+        {
+            var recipeMainImage = Context.RecipesImages.FirstOrDefault(x => x.RecipeId == recipeId && x.MainPicture == true);
+
+            if (recipeMainImage is null)
+            {
+                throw new ImageException(ImageException.UserhasNoProfileImage); //TODO
+            }
+            if (recipeMainImage.Value is null)
+            {
+                throw new ImageException(ImageException.UserhasNoProfileImage); //TODO
+            }
+            return string.Format("data:image/png;base64, {0}", Convert.ToBase64String(recipeMainImage.Value));
+        }
     }
 }

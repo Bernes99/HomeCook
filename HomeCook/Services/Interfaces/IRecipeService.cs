@@ -8,5 +8,6 @@ namespace HomeCook.Services.Interfaces
     {
         Task<Recipe> AddRecipe(IFormFile? mainPicture, IFormFile?[] pictures, [FromBody] AddRecipeDto model);
         Task<RecipeDetailsDto> GetRecipeDetails(string recipePublicId);
+        void InitialIndexes();
     }
 }

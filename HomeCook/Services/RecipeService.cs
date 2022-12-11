@@ -9,6 +9,7 @@ using HomeCook.Data.CustomException;
 using System.Reflection.Metadata.Ecma335;
 using Microsoft.EntityFrameworkCore;
 using HomeCook.DTO.Product;
+using HomeCook.Data.Extensions.SearchEngine;
 
 namespace HomeCook.Services
 {
@@ -18,13 +19,16 @@ namespace HomeCook.Services
         private readonly IImageService _imageService;
         private readonly ICategoryService _categoryService;
         private readonly IProductService _productService;
+        private readonly IRecipeSearchEngine _recipeSearchEngine;
         public RecipeService(DefaultDbContext context,
         IMapper mapper,
         IUserService userService,
         IImageService imageService,
         ICategoryService categoryService,
-        IProductService productService) : base(context, mapper)
+        IProductService productService,
+        IRecipeSearchEngine recipeSearchEngine) : base(context, mapper)
         {
+            _recipeSearchEngine = recipeSearchEngine;
             _userService = userService;
             _imageService = imageService;
             _categoryService = categoryService;
@@ -168,6 +172,12 @@ namespace HomeCook.Services
             }
             return Context.Tags.Where(x=> tags.Contains(x.Name)).Select(x => x.Id).ToList();
 
+        }
+
+        public void InitialIndexes()
+        {
+            var recipies = Context.Recipes.ToList();
+            _recipeSearchEngine.AddOrUpdateRange(recipies);
         }
     }
 }
