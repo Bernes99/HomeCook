@@ -18,11 +18,13 @@ namespace HomeCook.Controllers
     {
         private ICategoryService _categoryService;
         private IRecipeService _recipeService;
+        private IImageService _imageService;
 
-        public RecipeController(ICategoryService categoryService, IRecipeService recipeService)
+        public RecipeController(ICategoryService categoryService, IRecipeService recipeService, IImageService imageService)
         {
             _categoryService = categoryService;
             _recipeService = recipeService;
+            _imageService = imageService;
         }
         #region Category CRUD
         [HttpPost("Category/AddCategory")]
@@ -120,6 +122,48 @@ namespace HomeCook.Controllers
             var result = await _recipeService.GetRecipesList(searchPhrase, filters);
 
             return Ok(result);
+        }
+
+        [HttpPut("{Id}/UpdateMainImage")]
+        public async Task<ActionResult> UpdateRecipe([FromRoute] string Id, [FromForm] IFormFile file)
+        {
+            var recipe = _recipeService.FindRecipeByPublicId(Id);
+
+            if (!IsSelfOrAdmin(recipe.AuthorId))
+            {
+                return Unauthorized();
+            }
+            _imageService.AddOrUpdateRecipeImage(file, Id, true);
+
+            return Ok();
+        }
+
+        [HttpPost("{Id}/AddImages")]
+        public async Task<ActionResult> AddRecipeImages([FromRoute] string Id, [FromForm] IFormFile[] files)
+        {
+            var recipe = _recipeService.FindRecipeByPublicId(Id);
+
+            if (!IsSelfOrAdmin(recipe.AuthorId))
+            {
+                return Unauthorized();
+            }
+            _imageService.AddRecipeImageRange(files, Id);
+
+            return Ok();
+        }
+
+        [HttpDelete("{Id}/DeleteImages")]
+        public async Task<ActionResult> DeleteRecipeImages([FromRoute] string Id, [FromBody] string[] imageIds)
+        {
+            var recipe = _recipeService.FindRecipeByPublicId(Id);
+
+            if (!IsSelfOrAdmin(recipe.AuthorId))
+            {
+                return Unauthorized();
+            }
+            _imageService.DeleteRecipeImages(imageIds);
+
+            return Ok();
         }
 
         private bool IsSelfOrAdmin(string uesrId)

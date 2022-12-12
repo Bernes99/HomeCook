@@ -74,17 +74,30 @@ namespace HomeCook.Services
             return string.Format("data:image/png;base64, {0}", Convert.ToBase64String(profileImage.Value));
         }
 
-        public void UpdateRecipeImage(IFormFile file, string recipeId, bool isMainImage = false)
+        public void AddOrUpdateRecipeImage(IFormFile file, string recipeId, bool isMainImage = false)
         {
             var recipe = Context.Recipes.FirstOrDefault(x => x.PublicId == recipeId);
             if (recipe is null)
             {
                 throw new ImageException(ImageException.ProfileImageError); // TODO update Exeption
             }
-            UpdateRecipeImage(file, recipe.Id, isMainImage);
+            AddOrUpdateRecipeImage(file, recipe.Id, isMainImage);
         }
-
-        public void UpdateRecipeImage(IFormFile file, long recipeId, bool isMainImage = false)
+        public void AddRecipeImageRange(IFormFile[] files, string recipeId)
+        {
+            foreach (var file in files)
+            {
+                AddOrUpdateRecipeImage(file, recipeId);
+            }
+        }
+        public bool DeleteRecipeImages(string[] imageIds)
+        {
+            var images = Context.RecipesImages.Where(x => imageIds.Contains(x.PublicId));
+            Context.RemoveRange(images);
+            SaveChanges();
+            return true;
+        }
+        public void AddOrUpdateRecipeImage(IFormFile file, long recipeId, bool isMainImage = false)
         {
             
             var recipeImage = Context.RecipesImages.FirstOrDefault(x => x.RecipeId == recipeId);
@@ -128,9 +141,9 @@ namespace HomeCook.Services
             {
                 throw new NullReferenceException(); //TODO 
             }
-            return GetrecipeMainImage(recipe.Id);
+            return GetRecipeMainImage(recipe.Id);
         }
-        public string GetrecipeMainImage(long recipeId)
+        public string GetRecipeMainImage(long recipeId)
         {
             var recipeMainImage = Context.RecipesImages.FirstOrDefault(x => x.RecipeId == recipeId && x.MainPicture == true);
 

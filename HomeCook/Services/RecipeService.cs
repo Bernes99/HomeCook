@@ -77,10 +77,10 @@ namespace HomeCook.Services
                 newRecipe.RecipesTags.Add(new RecipesTag { TagId = id, RecipeId = newRecipe.Id });
             }
 
-            _imageService.UpdateRecipeImage(mainPicture, newRecipe.Id, true);
+            _imageService.AddOrUpdateRecipeImage(mainPicture, newRecipe.Id, true);
             foreach (var picture in pictures)
             {
-                _imageService.UpdateRecipeImage(picture, newRecipe.Id, false);
+                _imageService.AddOrUpdateRecipeImage(picture, newRecipe.Id, false);
             }
 
             _recipeSearchEngine.AddOrUpdateRange(Context.Recipes.Include(x => x.RecipeProducts).ThenInclude(x => x.Product)
