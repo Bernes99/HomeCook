@@ -33,7 +33,7 @@ namespace HomeCook.Controllers
             await _categoryService.AddCategory(CategoryName);
             return Ok();
         }
-        [HttpPost("Category/UpdateCategory")]
+        [HttpPut("Category/UpdateCategory")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
             Roles = "Admin")]
         public async Task<ActionResult> UpdateProductCategory([FromBody] CategoryDto newProductCategory)

@@ -52,7 +52,7 @@ namespace HomeCook.Controllers
             }
             return StatusCode(500, result.Errors);
         }
-        [HttpPost("{Id}/UpdateUser")]
+        [HttpPut("{Id}/UpdateUser")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
             Roles = "Admin,User")]
         public async Task<ActionResult> UpdateUser([FromRoute] string Id, [FromBody] UserUpdateDto model)
@@ -71,7 +71,7 @@ namespace HomeCook.Controllers
         }
         #endregion
         #region profileImage
-        [HttpPost("{Id}/ProfileImage")]
+        [HttpPut("{Id}/ProfileImage")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
             Roles = "Admin,User")]
         public async Task<ActionResult> UpdateProfileImage([FromRoute] string Id, IFormFile? file)
@@ -97,7 +97,7 @@ namespace HomeCook.Controllers
         #endregion
 
 
-        [HttpPost("{Id}/Products/Update")]
+        [HttpPut("{Id}/Products/Update")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
             Roles = "Admin,User")]
         public async Task<ActionResult> UpdateUserProduct([FromRoute] string Id, [FromBody] List<AddUserProductDto> model)

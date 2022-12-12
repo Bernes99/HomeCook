@@ -27,7 +27,7 @@ namespace HomeCook.Controllers
             await _productService.AddProductCategory(CategoryName);
             return Ok();
         }
-        [HttpPost("Category/UpdateProductCategory")]
+        [HttpPut("Category/UpdateProductCategory")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
             Roles = "Admin")]
         public async Task<ActionResult> UpdateProductCategory([FromBody] CategoryDto newProductCategory)
@@ -82,7 +82,7 @@ namespace HomeCook.Controllers
             return Ok();
         }
 
-        [HttpPost("UpdateProduct")]
+        [HttpPut("UpdateProduct")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
             Roles = "Admin")]
         public async Task<ActionResult> UpdateProduct([FromBody] ProductDto newProduct)
