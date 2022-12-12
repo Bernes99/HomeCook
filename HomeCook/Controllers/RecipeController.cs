@@ -2,6 +2,7 @@
 using HomeCook.DTO;
 using HomeCook.DTO.Product;
 using HomeCook.DTO.Recipe;
+using HomeCook.DTO.SearchEngine;
 using HomeCook.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -83,6 +84,25 @@ namespace HomeCook.Controllers
         {
 
             var result = await _recipeService.GetRecipeDetails(Id);
+
+            return Ok(result);
+        }
+        [AllowAnonymous]//TODO tylko do testow
+        [HttpPut("{Id}")]
+        public async Task<ActionResult> UpdateRecipe([FromRoute]string Id,[FromBody] AddRecipeDto model)
+        {
+
+            var result = await _recipeService.UpdateRecipe(model, Id);
+
+            return Ok(result);
+        }
+
+        [AllowAnonymous]
+        [HttpPost("GetList")]
+        public async Task<ActionResult> GetRecipesList([FromQuery] string? searchPhrase, [FromBody] RecipeFilters filters)
+        {
+
+            var result = await _recipeService.GetRecipesList(searchPhrase, filters);
 
             return Ok(result);
         }

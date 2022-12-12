@@ -68,10 +68,15 @@ namespace HomeCook.Data.Extensions.SearchEngine
 
             foreach (var entity in entities)
             {
+                var newDocument = GetDocumentFromEntity(entity);
+                if (newDocument is null)
+                {
+                    continue;
+                }
                 var indexTerm = new Term(
                     IdFieldKey,
                     GetEntityId(entity).ToString());
-                var newDocument = GetDocumentFromEntity(entity);
+                
                 writer.UpdateDocument(indexTerm, newDocument);
             }
             writer.Commit();
@@ -108,7 +113,10 @@ namespace HomeCook.Data.Extensions.SearchEngine
             {
                 throw new ArgumentNullException();
             }
-
+            if (entity.DateDeletedUtc is not null || !string.IsNullOrEmpty(entity.DeletedBy))
+            {
+                return null;
+            }
             var recipe = entity;
 
             if (recipe.RecipeProducts is null ||
@@ -262,7 +270,7 @@ namespace HomeCook.Data.Extensions.SearchEngine
             var indexSearcher = new IndexSearcher(directoryReader);
 
 
-            var hits = indexSearcher.Search(query, 10).ScoreDocs;
+            var hits = indexSearcher.Search(query, int.MaxValue).ScoreDocs;
 
             var recipes = new List<LuceneRecipeSearchResultItem>();
             foreach (var hit in hits)

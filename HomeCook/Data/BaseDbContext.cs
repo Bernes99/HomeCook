@@ -58,7 +58,7 @@ namespace HomeCook.Data
 
                 entity.Property(e => e.PublicId)
                     .HasMaxLength(36)
-                    .HasDefaultValueSql("(uuid_generate_v1())::character(36)")
+                    .HasDefaultValueSql("(uuid_generate_v4())::character(36)")
                     .IsFixedLength();
             });
 
@@ -85,7 +85,7 @@ namespace HomeCook.Data
 
                 entity.Property(e => e.PublicId)
                     .HasMaxLength(36)
-                    .HasDefaultValueSql("(uuid_generate_v1())::character(36)")
+                    .HasDefaultValueSql("(uuid_generate_v4())::character(36)")
                     .IsFixedLength();
 
                 entity.HasOne(d => d.Recipe)
@@ -108,7 +108,7 @@ namespace HomeCook.Data
 
                 entity.Property(e => e.PublicId)
                     .HasMaxLength(36)
-                    .HasDefaultValueSql("(uuid_generate_v1())::character(36)")
+                    .HasDefaultValueSql("(uuid_generate_v4())::character(36)")
                     .IsFixedLength();
 
                 entity.HasOne(d => d.Category)
@@ -131,7 +131,7 @@ namespace HomeCook.Data
 
                 entity.Property(e => e.PublicId)
                     .HasMaxLength(36)
-                    .HasDefaultValueSql("(uuid_generate_v1())::character(36)")
+                    .HasDefaultValueSql("(uuid_generate_v4())::character(36)")
                     .IsFixedLength();
             });
 
@@ -150,7 +150,7 @@ namespace HomeCook.Data
 
                 entity.Property(e => e.PublicId)
                     .HasMaxLength(36)
-                    .HasDefaultValueSql("(uuid_generate_v1())::character(36)")
+                    .HasDefaultValueSql("(uuid_generate_v4())::character(36)")
                     .IsFixedLength();
 
                 entity.Property(e => e.UserId)
@@ -191,7 +191,7 @@ namespace HomeCook.Data
 
                 entity.Property(e => e.PublicId)
                     .HasMaxLength(36)
-                    .HasDefaultValueSql("(uuid_generate_v1())::character(36)")
+                    .HasDefaultValueSql("(uuid_generate_v4())::character(36)")
                     .IsFixedLength();
 
                 entity.Property(e => e.Title).HasMaxLength(65535);
@@ -208,7 +208,7 @@ namespace HomeCook.Data
 
                 entity.Property(e => e.PublicId)
                     .HasMaxLength(36)
-                    .HasDefaultValueSql("(uuid_generate_v1())::character(36)")
+                    .HasDefaultValueSql("(uuid_generate_v4())::character(36)")
                     .IsFixedLength();
 
                 entity.HasOne(d => d.Product)
@@ -235,7 +235,7 @@ namespace HomeCook.Data
 
                 entity.Property(e => e.PublicId)
                     .HasMaxLength(36)
-                    .HasDefaultValueSql("(uuid_generate_v1())::character(36)")
+                    .HasDefaultValueSql("(uuid_generate_v4())::character(36)")
                     .IsFixedLength();
 
                 entity.HasOne(d => d.Category)
@@ -264,7 +264,7 @@ namespace HomeCook.Data
 
                 entity.Property(e => e.PublicId)
                     .HasMaxLength(36)
-                    .HasDefaultValueSql("(uuid_generate_v1())::character(36)")
+                    .HasDefaultValueSql("(uuid_generate_v4())::character(36)")
                     .IsFixedLength();
 
                 entity.HasOne(d => d.Recipe)
@@ -285,7 +285,7 @@ namespace HomeCook.Data
 
                 entity.Property(e => e.PublicId)
                     .HasMaxLength(36)
-                    .HasDefaultValueSql("(uuid_generate_v1())::character(36)")
+                    .HasDefaultValueSql("(uuid_generate_v4())::character(36)")
                     .IsFixedLength();
 
                 entity.HasOne(d => d.Recipe)
@@ -314,7 +314,7 @@ namespace HomeCook.Data
 
                 entity.Property(e => e.PublicId)
                     .HasMaxLength(36)
-                    .HasDefaultValueSql("(uuid_generate_v1())::character(36)")
+                    .HasDefaultValueSql("(uuid_generate_v4())::character(36)")
                     .IsFixedLength();
             });
 
@@ -333,7 +333,7 @@ namespace HomeCook.Data
 
                 entity.Property(e => e.PublicId)
                     .HasMaxLength(36)
-                    .HasDefaultValueSql("(uuid_generate_v1())::character(36)")
+                    .HasDefaultValueSql("(uuid_generate_v4())::character(36)")
                     .IsFixedLength();
 
                 entity.Property(e => e.UserId)

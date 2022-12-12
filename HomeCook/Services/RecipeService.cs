@@ -10,6 +10,7 @@ using System.Reflection.Metadata.Ecma335;
 using Microsoft.EntityFrameworkCore;
 using HomeCook.DTO.Product;
 using HomeCook.Data.Extensions.SearchEngine;
+using HomeCook.DTO.SearchEngine;
 
 namespace HomeCook.Services
 {
@@ -35,7 +36,7 @@ namespace HomeCook.Services
             _productService = productService;
         }
 
-        public async Task<Recipe> AddRecipe(IFormFile? mainPicture, IFormFile?[] pictures, [FromBody] AddRecipeDto model)
+        public async Task<Recipe> AddRecipe(IFormFile? mainPicture, IFormFile?[] pictures, AddRecipeDto model)
         {
             var newRecipe = Mapper.Map<Recipe>(model);
             newRecipe.DateCreatedUtc = DateTime.UtcNow;
@@ -81,17 +82,95 @@ namespace HomeCook.Services
             {
                 _imageService.UpdateRecipeImage(picture, newRecipe.Id, false);
             }
+
+            _recipeSearchEngine.AddOrUpdateRange(Context.Recipes.Include(x => x.RecipeProducts).ThenInclude(x => x.Product)
+                .Include(x => x.RecipesTags).ThenInclude(x => x.Tag)
+                .Include(x => x.RecipesCategories).ThenInclude(x => x.Category).Where(x => x.Id == newRecipe.Id).ToList());
+
             return newRecipe;
         }
+        public async Task<RecipeDetailsDto> UpdateRecipe(AddRecipeDto model, string recipePublicId)
+        {
+            var recipe = Context.Recipes.Include(x => x.RecipeProducts).ThenInclude(x => x.Product)
+                .Include(x => x.RecipesTags).ThenInclude(x => x.Tag)
+                .Include(x => x.RecipesCategories).ThenInclude(x => x.Category).FirstOrDefault(x => x.PublicId == recipePublicId);
+            if (recipe is null)
+            {
+                throw new NullReferenceException(); //TODO
+            }
+            Mapper.Map(model, recipe);
+            recipe.DateModifiedUtc = DateTime.UtcNow;
+
+            var previousRecipeProducts = recipe.RecipeProducts.ToList();
+            Context.RemoveRange(previousRecipeProducts);
+            SaveChanges();
+
+            var productsIds = _productService.FindAllPorductIds();
+            foreach (var product in model.Products)
+            {
+                var productId = productsIds.FirstOrDefault(x => product.ProductId == x.Value);
+                if (product is null)
+                {
+                    throw new ProductException(ProductException.ProductDoesntExist);//TODO exeption
+                }
+
+                recipe.RecipeProducts.Add(new RecipeProduct { RecipeId = recipe.Id, ProductId = productId.Key, Amount = product.Amount });
+            }
+            var categoriesIds = _categoryService.FindAllCategoriesIds();
+
+            if (model.CategoriesIds.Count != model.CategoriesIds.Distinct().Count())
+            {
+                throw new CategoryException(ProductException.CantAddManyOfTheSameProduscts);//TODO exeption
+            }
+
+            var previousRecipeCategories = recipe.RecipesCategories.ToList();
+            Context.RemoveRange(previousRecipeCategories);
+            SaveChanges();
+            foreach (var category in model.CategoriesIds)
+            {
+                var categoryId = categoriesIds.FirstOrDefault(x => x.Value == category);
+                if (category is null)
+                {
+                    throw new CategoryException(CategoryException.SomethingWentWrong); //TODO exeption
+                }
+                recipe.RecipesCategories.Add(new RecipesCategory { RecipeId = recipe.Id, CategoryId = categoryId.Key });
+            }
+            var tagsInternalIds = AddTags(model.Tags);
+
+            var previousRecipeTags = recipe.RecipesTags.ToList();
+            Context.RemoveRange(previousRecipeTags);
+            SaveChanges();
+            foreach (var id in tagsInternalIds)
+            {
+                recipe.RecipesTags.Add(new RecipesTag { TagId = id, RecipeId = recipe.Id });
+            }
 
 
+            Update(recipe);
+
+            _recipeSearchEngine.AddOrUpdateRange(new List<Recipe>(){ recipe });
+
+            return await GetRecipeDetails(recipe.Id);
+
+
+        }
         public async Task<RecipeDetailsDto> GetRecipeDetails(string recipePublicId)
+        {
+            var recipe = Context.Recipes.FirstOrDefault(x => x.PublicId == recipePublicId);
+            if (recipe == null)
+            {
+                throw new Exception("fail"); //TODO change Exeption
+            }
+            return await GetRecipeDetails(recipe.Id);
+        }
+
+        public async Task<RecipeDetailsDto> GetRecipeDetails(long recipeInternalId)
         {
             var recipe = Context.Recipes.Include(x => x.RecipeProducts).ThenInclude(x => x.Product)
                 .Include(x => x.RecipesTags).ThenInclude(x => x.Tag)
                 .Include(x => x.RecipesCategories).ThenInclude(x => x.Category)
                 .Include(x => x.Comments) // TODO to mozna pominac
-                .Include(x => x.RecipesImages).FirstOrDefault(x => x.PublicId == recipePublicId);
+                .Include(x => x.RecipesImages).FirstOrDefault(x => x.Id == recipeInternalId);
             if (recipe == null)
             {
                 throw new Exception("fail"); //TODO change Exeption
@@ -141,6 +220,26 @@ namespace HomeCook.Services
             return recipeDto;
         }
 
+        public async Task<List<LuceneRecipeSearchResultItem>> GetRecipesList(string searchString, RecipeFilters filters)
+        {
+            var searchResults = _recipeSearchEngine.Search(searchString, filters);
+            foreach (var item in searchResults)
+            {
+                var user = Context.Users.FirstOrDefault(x => x.Id == item.Author);
+                if (user is null)
+                {
+                    item.Author = "";
+                    continue;
+                }
+                    
+                var displayName = user.firstName + user.surname;
+                item.Author = String.IsNullOrEmpty(displayName) ? user.UserName : displayName;
+
+                item.MainImage = _imageService.GetrecipeMainImage(item.Id);
+            }
+            return searchResults;
+        }
+
 
         public Dictionary<long, string> FindAllTagsIds()
         {
@@ -173,6 +272,8 @@ namespace HomeCook.Services
             return Context.Tags.Where(x=> tags.Contains(x.Name)).Select(x => x.Id).ToList();
 
         }
+
+
 
         public void InitialIndexes()
         {
