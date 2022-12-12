@@ -19,6 +19,10 @@ namespace HomeCook.Data.MappingProfiles
 
             CreateMap<AppUser, RecipeUserDto>();
 
+            CreateMap<Comment, CommentResponseDto>()
+                .ForMember(d => d.Id, m => m.MapFrom(s => s.PublicId))
+                .ForMember(d => d.Author, m => m.MapFrom(s => s.AuthorId));
+
 
             CreateMap<Recipe, RecipeDetailsDto>()
             .ForMember(d => d.Id, m => m.MapFrom(s => s.PublicId))

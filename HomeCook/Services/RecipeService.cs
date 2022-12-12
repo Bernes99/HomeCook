@@ -245,12 +245,70 @@ namespace HomeCook.Services
                     continue;
                 }
                     
-                var displayName = user.firstName + user.surname;
-                item.Author = String.IsNullOrEmpty(displayName) ? user.UserName : displayName;
+                var displayName = user.firstName +" "+ user.surname;
+                item.Author = String.IsNullOrWhiteSpace(displayName) ? user.UserName : displayName;
 
                 item.MainImage = _imageService.GetrecipeMainImage(item.Id);
             }
             return searchResults;
+        }
+
+        public async Task<CommentResponseDto> AddComment(string recipeId, string userId, string text)
+        {
+            var recipe = FindRecipeByPublicId(recipeId);
+            
+            var comment = new Comment() { RecipeId = recipe.Id, AuthorId = userId, DateCreatedUtc = DateTime.UtcNow, Text = text};
+
+            Create(comment);
+
+            var commentDto = Mapper.Map<CommentResponseDto>(comment);
+            return commentDto;
+        }
+
+        public async Task<List<CommentResponseDto>> GetComments(string recipeId)
+        {
+            var recipe = FindRecipeByPublicId(recipeId);
+            var comments = Context.Comments.Where(x => x.RecipeId == recipe.Id && x.DeletedBy == null && x.DateDeletedUtc == null).ToList();
+
+            if (recipe is null)
+            {
+                throw new ArgumentNullException();//TODO
+            }
+
+            var commentsDto = Mapper.Map<List<CommentResponseDto>>(recipe.Comments);
+            foreach (var comment in commentsDto)
+            {
+                var user = await _userService.FindUserAsyncbyId(comment.Author);
+                var displayName = user.firstName + " " + user.surname;
+                comment.Author = String.IsNullOrWhiteSpace(displayName) ? user.UserName : displayName;
+            }
+
+            return commentsDto;
+        }
+
+        public void DeleteComment(string recipeId, string commentId, string userId)
+        {
+            var recipe = FindRecipeByPublicId(recipeId);
+            var comment = Context.Comments.FirstOrDefault(x => x.PublicId == commentId && x.RecipeId == recipe.Id);
+
+            if (comment is null)
+            {
+                throw new ArgumentNullException(); //TODO
+            }
+
+            comment.DeletedBy = userId;
+            comment.DateDeletedUtc = DateTime.UtcNow;
+            Update(comment);
+        }
+
+        public Comment FindCommentByPublicId(string commentId)
+        {
+            var comment = Context.Comments.FirstOrDefault(x => x.PublicId == commentId);
+            if (comment is null)
+            {
+                throw new ArgumentNullException(); //TODO
+            }
+            return comment;
         }
         public Recipe FindRecipeByPublicId(string recipePublicId)
         {

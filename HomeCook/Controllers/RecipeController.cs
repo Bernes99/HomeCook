@@ -166,6 +166,41 @@ namespace HomeCook.Controllers
             return Ok();
         }
 
+        [HttpPost("{Id}/AddComment")]
+        public async Task<ActionResult> AddComment([FromRoute] string Id, string text)
+        {
+            var userId = User.Claims.FirstOrDefault(x => x.Type == "PublicId")?.Value;
+            if (!IsSelfOrAdmin(userId))
+            {
+                return Unauthorized();
+            }
+            await _recipeService.AddComment(Id, userId, text);
+
+            return Ok();
+        }
+
+        [HttpGet("{Id}/GetComments")]
+        public async Task<ActionResult> GetComments([FromRoute] string Id)
+        {
+            var comments = await _recipeService.GetComments(Id);
+
+            return Ok(comments);
+        }
+
+        [HttpDelete("{Id}/DeleteComment/{commentId}")]
+        public async Task<ActionResult> GetComments([FromRoute] string Id, [FromRoute]string commentId)
+        {
+            var comment = _recipeService.FindCommentByPublicId(commentId);
+            var userId = User.Claims.FirstOrDefault(x => x.Type == "PublicId")?.Value;
+            if (!IsSelfOrAdmin(comment.AuthorId))
+            {
+                return Unauthorized();
+            }
+            _recipeService.DeleteComment(Id,commentId,userId);
+
+            return Ok();
+        }
+
         private bool IsSelfOrAdmin(string uesrId)
         {
             if (!User.IsInRole("Admin"))
