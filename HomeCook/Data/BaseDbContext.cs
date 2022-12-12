@@ -220,7 +220,6 @@ namespace HomeCook.Data
                 entity.HasOne(d => d.Recipe)
                     .WithMany(p => p.RecipeProducts)
                     .HasForeignKey(d => d.RecipeId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_UserProducts_RecipeId");
             });
 
@@ -247,7 +246,6 @@ namespace HomeCook.Data
                 entity.HasOne(d => d.Recipe)
                     .WithMany(p => p.RecipesCategories)
                     .HasForeignKey(d => d.RecipeId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_RecipesCategories_RecipeId");
             });
 
@@ -270,7 +268,6 @@ namespace HomeCook.Data
                 entity.HasOne(d => d.Recipe)
                     .WithMany(p => p.RecipesImages)
                     .HasForeignKey(d => d.RecipeId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_RecipesImages_RecipeId");
             });
 
@@ -291,7 +288,6 @@ namespace HomeCook.Data
                 entity.HasOne(d => d.Recipe)
                     .WithMany(p => p.RecipesTags)
                     .HasForeignKey(d => d.RecipeId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_RecipesTags_RecipeId");
 
                 entity.HasOne(d => d.Tag)

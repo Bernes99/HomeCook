@@ -76,6 +76,7 @@ namespace HomeCook.Data.Migrations
                    .WithPublicId()
                    .WithColumn("RecipeId").AsInt64()
                         .ForeignKey("FK_CommentsRecipe_RecipeId", "App", "Recipes", "Id")
+                        .OnDeleteOrUpdate(System.Data.Rule.Cascade)
                    .WithColumn("CommentId").AsInt64()
                         .ForeignKey("FK_CommentsRecipe_CommentId", "App", "Comments", "Id");
             }
@@ -95,7 +96,8 @@ namespace HomeCook.Data.Migrations
                    .WithColumn("CategoryId").AsInt64()
                         .ForeignKey("FK_RecipesCategories_CategoryId", "App", "Categories", "Id")
                    .WithColumn("RecipeId").AsInt64()
-                        .ForeignKey("FK_RecipesCategories_RecipeId", "App", "Recipes", "Id");
+                        .ForeignKey("FK_RecipesCategories_RecipeId", "App", "Recipes", "Id")
+                        .OnDeleteOrUpdate(System.Data.Rule.Cascade);
             }
 
             if (!Schema.Schema("App").Table("Tags").Exists())
@@ -113,7 +115,8 @@ namespace HomeCook.Data.Migrations
                    .WithColumn("TagId").AsInt64()
                         .ForeignKey("FK_RecipesTags_TagId", "App", "Tags", "Id")
                    .WithColumn("RecipeId").AsInt64()
-                        .ForeignKey("FK_RecipesTags_RecipeId", "App", "Recipes", "Id");
+                        .ForeignKey("FK_RecipesTags_RecipeId", "App", "Recipes", "Id")
+                        .OnDeleteOrUpdate(System.Data.Rule.Cascade);
             }
 
             if (!Schema.Schema("App").Table("RecipesImages").Exists())
@@ -123,6 +126,7 @@ namespace HomeCook.Data.Migrations
                    .WithPublicId()
                    .WithColumn("RecipeId").AsInt64()
                         .ForeignKey("FK_RecipesImages_RecipeId", "App", "Recipes", "Id")
+                        .OnDeleteOrUpdate(System.Data.Rule.Cascade)
                    .WithColumn("Name").AsText().Nullable()
                    .WithColumn("Value").AsBinary().Nullable();
             }
@@ -159,6 +163,7 @@ namespace HomeCook.Data.Migrations
                    .WithPublicId()
                    .WithColumn("RecipeId").AsInt64()
                         .ForeignKey("FK_UserProducts_RecipeId", "App", "Recipes", "Id")
+                        .OnDeleteOrUpdate(System.Data.Rule.Cascade)
                     .WithColumn("ProductId").AsInt64()
                         .ForeignKey("FK_RecipeProduct_ProductId", "App", "Products", "Id")
                    .WithColumn("Amount").AsText().Nullable();

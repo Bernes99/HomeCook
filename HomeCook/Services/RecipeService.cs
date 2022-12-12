@@ -154,6 +154,19 @@ namespace HomeCook.Services
 
 
         }
+
+        public async Task<bool> DeleteRecipe( string recipePublicId, string userId)
+        {
+            var recipe = FindRecipeByPublicId(recipePublicId);
+
+            recipe.DeletedBy = userId;
+            recipe.DateDeletedUtc = DateTime.Now;
+            _recipeSearchEngine.Remove(recipe);
+
+            Update(recipe);
+            return true;
+        }
+
         public async Task<RecipeDetailsDto> GetRecipeDetails(string recipePublicId)
         {
             var recipe = Context.Recipes.FirstOrDefault(x => x.PublicId == recipePublicId);
@@ -239,7 +252,15 @@ namespace HomeCook.Services
             }
             return searchResults;
         }
-
+        public Recipe FindRecipeByPublicId(string recipePublicId)
+        {
+            var recipe = Context.Recipes.FirstOrDefault(x => x.PublicId == recipePublicId);
+            if (recipe is null)
+            {
+                throw new NullReferenceException(); //TODO
+            }
+            return recipe;
+        }
 
         public Dictionary<long, string> FindAllTagsIds()
         {

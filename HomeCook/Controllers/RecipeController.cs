@@ -97,6 +97,21 @@ namespace HomeCook.Controllers
             return Ok(result);
         }
 
+        [HttpDelete("{Id}")]
+        public async Task<ActionResult> DeleteRecipe([FromRoute] string Id)
+        {
+            var recipe = _recipeService.FindRecipeByPublicId(Id);
+
+            if (!IsSelfOrAdmin(recipe.AuthorId))
+            {
+                return Unauthorized();
+            }
+
+            var result = await _recipeService.DeleteRecipe(Id, User.Claims.FirstOrDefault(x => x.Type == "PublicId")?.Value);
+
+            return Ok(result);
+        }
+
         [AllowAnonymous]
         [HttpPost("GetList")]
         public async Task<ActionResult> GetRecipesList([FromQuery] string? searchPhrase, [FromBody] RecipeFilters filters)
