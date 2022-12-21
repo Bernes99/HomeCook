@@ -235,6 +235,14 @@ namespace HomeCook.Services
 
         public async Task<List<LuceneRecipeSearchResultItem>> GetRecipesList(string searchString, RecipeFilters filters)
         {
+            if (filters.CategoryNames is null)
+            {
+                filters.CategoryNames = new string[] { };
+            }
+            if (filters.Products is null)
+            {
+                filters.Products = new string[] { };
+            }
             var searchResults = _recipeSearchEngine.Search(searchString, filters);
             foreach (var item in searchResults)
             {

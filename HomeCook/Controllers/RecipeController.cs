@@ -53,7 +53,7 @@ namespace HomeCook.Controllers
             return Ok();
         }
 
-        [HttpGet("Category/GetProductCategory/{Id}")]
+        [HttpGet("Category/GetRecipeCategory/{Id}")]
         public async Task<ActionResult> GetCategory([FromRoute] string Id)
         {
             var result = await _categoryService.GetCategoryDto(Id);
