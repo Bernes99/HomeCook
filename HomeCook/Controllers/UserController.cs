@@ -35,6 +35,18 @@ namespace HomeCook.Controllers
             var users = _userService.GetUsers(query);
             return Ok(users);
         }
+
+        [HttpGet("{Id}/Details")]
+        public async Task<ActionResult> GetUser([FromRoute] string Id)
+        {
+            if (!IsSelfOrAdmin(Id))
+            {
+                return Unauthorized();
+            }
+            var user = await _userService.GetUserDto(Id);
+            return Ok(user);
+        }
+
         [HttpDelete("{Id}/DeleteUser")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
             Roles = "Admin,User")]

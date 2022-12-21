@@ -165,7 +165,7 @@ builder.Services.Configure<CookiePolicyOptions>(options =>
 builder.Services.AddAutoMapper(typeof(Program));
 
 builder.Services.AddCors(p => p.AddPolicy("CORSPolicy", buid => {
-    buid.WithOrigins("http://localhost:5173", "https://www.youtube.com/").AllowAnyMethod().AllowAnyHeader().AllowCredentials();
+    buid.WithOrigins("http://localhost:5173").AllowAnyMethod().AllowAnyHeader().AllowCredentials();
 }));
 
 //dodawanie servisu fluentMigratora

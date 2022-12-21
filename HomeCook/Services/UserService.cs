@@ -76,6 +76,18 @@ namespace HomeCook.Services
             return result;
         }
 
+        public async Task<UserDto> GetUserDto(string id)
+        {
+            var user = Context.Users.FirstOrDefault(x => x.Id == id && !x.IsDeleted);
+            if (user is null )
+            {
+                throw new NullReferenceException(); //TODO
+            }
+            var userDto = Mapper.Map<UserDto>(user);
+
+            return userDto;
+        }
+
         public async Task<IdentityResult> DeleteUser(string userId)
         {
             var user = await FindUserAsyncbyId(userId);

@@ -11,6 +11,7 @@ namespace HomeCook.Services.Interfaces
         Task<IdentityResult> DeleteUser(string userId);
         Task<AppUser> FindUserAsync(string emailAddress);
         Task<AppUser> FindUserAsyncbyId(string userId);
+        Task<UserDto> GetUserDto(string id);
         PaginationResult<UserDto> GetUsers(PaginationQuery query);
         Task<IdentityResult> UpdateUser(string userId, UserUpdateDto model);
     }

@@ -69,12 +69,6 @@ namespace HomeCook.Services
             var expires = DateTime.Now.AddHours(AuthSettings.JwtExpireHours);
 
             IList<Claim> claims = await GetUserClaimsAsync(user);
-            //var claims = new List<Claim>()
-            //{
-            //    new Claim(ClaimTypes.Name, $"{user.UserName}"),
-            //    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            //    new Claim(JwtRegisteredClaimNames.Email, user.Email)
-            //};
 
             var token = new JwtSecurityToken(AuthSettings.JwtIssuer,
                 AuthSettings.JwtIssuer,

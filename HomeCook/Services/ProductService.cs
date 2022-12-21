@@ -31,8 +31,7 @@ namespace HomeCook.Services
             }
 
             var newCategory = new ProductCategory() { Name = categoryName };
-            Context.ProductCategories.Add(newCategory);
-            Context.SaveChanges();
+            Create(newCategory);
             return newCategory;
         }
 
