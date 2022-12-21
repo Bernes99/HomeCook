@@ -9,5 +9,6 @@
         public float Rating { get; set; }
         public float Difficulty { get; set; }
         public string MainImage { get; set; }
+        public List<string> Products { get; set; }
     }
 }

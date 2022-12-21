@@ -178,7 +178,7 @@ namespace HomeCook.Data.Extensions.SearchEngine
             {
                 var field = new TextField(
                     IndexField.Product.ToString(),
-                    x.Product.Name + " {" + x.Id + "}",
+                    x.Product.Name,// + " {" + x.Id + "}",
                     Field.Store.YES);
 
                 document.Add(field);
@@ -187,13 +187,13 @@ namespace HomeCook.Data.Extensions.SearchEngine
             recipe.RecipesCategories.ToList().ForEach(x =>
                 document.Add(new TextField(
                     IndexField.Category.ToString(),
-                    x.Category.Name + " {" + x.Id + "}",
+                    x.Category.Name, //+ " {" + x.Id + "}",
                     Field.Store.YES)));
 
             recipe.RecipesTags.ToList().ForEach(x =>
                 document.Add(new TextField(
                     IndexField.Tag.ToString(),
-                    x.Tag.Name + " {" + x.Id + "}",
+                    x.Tag.Name, //+ " {" + x.Id + "}",
                     Field.Store.YES)));
 
             return document;
@@ -284,6 +284,7 @@ namespace HomeCook.Data.Extensions.SearchEngine
                     Difficulty = float.Parse(document.Get(IndexField.Difficulty.ToString())),
                     Rating = float.Parse(document.Get(IndexField.Rating.ToString())),
                     Author = document.Get(IndexField.Author.ToString()),
+                    Products = document.GetValues(IndexField.Product.ToString()).ToList(),
                     //MainImage =_imageService.GetrecipeMainImage(long.Parse(document.Get(IndexField.PublicId.ToString())))
                 });
 
