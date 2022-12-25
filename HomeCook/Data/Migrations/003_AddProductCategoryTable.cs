@@ -14,10 +14,10 @@ namespace HomeCook.Data.Migrations
                    .WithPublicId()
                    .WithColumn("Name").AsText();
             }
-            if (Schema.Schema("App").Table("Products").Exists())
+            if (Schema.Schema("App").Table("Product").Exists())
             {
-                Rename.Column("Category").OnTable("Products").InSchema("App").To("CategoryId");
-                Alter.Table("Products").InSchema("App").AlterColumn("CategoryId")
+                Rename.Column("Category").OnTable("Product").InSchema("App").To("CategoryId");
+                Alter.Table("Product").InSchema("App").AlterColumn("CategoryId")
                     .AsInt64()
                     .NotNullable()
                     .ForeignKey("FK_Product_CategoryId", "App", "ProductCategory", "Id");

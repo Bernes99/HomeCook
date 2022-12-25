@@ -40,7 +40,7 @@ namespace HomeCook.Services
         }
         public async Task<CategoryDto> GetCategoryDto(string Id)
         {
-            var recipeCategory = Context.RecipesCategories.FirstOrDefault(x => x.PublicId == Id);
+            var recipeCategory = Context.RecipeCategories.FirstOrDefault(x => x.PublicId == Id);
             if (recipeCategory is null)
             {
                 throw new ProductException(ProductException.ProductCategoryDoesntExist);

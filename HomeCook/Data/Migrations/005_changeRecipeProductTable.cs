@@ -14,9 +14,9 @@ namespace HomeCook.Data.Migrations
                 Alter.Table("RecipeProduct").InSchema("App").AddColumn("Amount").AsFloat();
 
             }
-            if (Schema.Schema("App").Table("Recipes").Exists())
+            if (Schema.Schema("App").Table("Recipe").Exists())
             {
-                Delete.Column("CreatedBy").FromTable("Recipes").InSchema("App");
+                Delete.Column("CreatedBy").FromTable("Recipe").InSchema("App");
             }
             
         }
@@ -28,9 +28,9 @@ namespace HomeCook.Data.Migrations
                 Delete.Column("Amount").FromTable("RecipeProduct").InSchema("App");
                 Alter.Table("RecipeProduct").InSchema("App").AddColumn("Amount").AsText();
             }
-            if (Schema.Schema("App").Table("Recipes").Exists())
+            if (Schema.Schema("App").Table("Recipe").Exists())
             {
-                Alter.Table("Recipes").InSchema("App").AddColumn("CreatedBy").AsFixedLengthAnsiString(36);
+                Alter.Table("Recipe").InSchema("App").AddColumn("CreatedBy").AsFixedLengthAnsiString(36);
             }
         }
     }

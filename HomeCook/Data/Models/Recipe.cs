@@ -8,10 +8,10 @@ namespace HomeCook.Data.Models
         public Recipe()
         {
             Comments = new HashSet<Comment>();
+            RecipeCategories = new HashSet<RecipeCategory>();
+            RecipeImages = new HashSet<RecipeImage>();
             RecipeProducts = new HashSet<RecipeProduct>();
-            RecipesCategories = new HashSet<RecipesCategory>();
-            RecipesImages = new HashSet<RecipesImage>();
-            RecipesTags = new HashSet<RecipesTag>();
+            RecipeTags = new HashSet<RecipeTag>();
         }
 
         public long Id { get; set; }
@@ -31,9 +31,9 @@ namespace HomeCook.Data.Models
         public float Difficulty { get; set; }
 
         public virtual ICollection<Comment> Comments { get; set; }
+        public virtual ICollection<RecipeCategory> RecipeCategories { get; set; }
+        public virtual ICollection<RecipeImage> RecipeImages { get; set; }
         public virtual ICollection<RecipeProduct> RecipeProducts { get; set; }
-        public virtual ICollection<RecipesCategory> RecipesCategories { get; set; }
-        public virtual ICollection<RecipesImage> RecipesImages { get; set; }
-        public virtual ICollection<RecipesTag> RecipesTags { get; set; }
+        public virtual ICollection<RecipeTag> RecipeTags { get; set; }
     }
 }

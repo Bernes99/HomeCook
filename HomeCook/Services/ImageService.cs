@@ -92,7 +92,7 @@ namespace HomeCook.Services
         }
         public bool DeleteRecipeImages(string[] imageIds)
         {
-            var images = Context.RecipesImages.Where(x => imageIds.Contains(x.PublicId));
+            var images = Context.RecipeImages.Where(x => imageIds.Contains(x.PublicId));
             Context.RemoveRange(images);
             SaveChanges();
             return true;
@@ -100,7 +100,7 @@ namespace HomeCook.Services
         public void AddOrUpdateRecipeImage(IFormFile file, long recipeId, bool isMainImage = false)
         {
             
-            var recipeImage = Context.RecipesImages.FirstOrDefault(x => x.RecipeId == recipeId);
+            var recipeImage = Context.RecipeImages.FirstOrDefault(x => x.RecipeId == recipeId);
 
             if (file is not null && file.Length > 0)
             {
@@ -112,7 +112,7 @@ namespace HomeCook.Services
                     {
                         try
                         {
-                            var newPhoto = new RecipesImage()
+                            var newPhoto = new RecipeImage()
                             {
                                 Value = memoryStream.ToArray(),
                                 Name = file.FileName,
@@ -121,9 +121,9 @@ namespace HomeCook.Services
                             };
                             if (recipeImage is not null && isMainImage)
                             {
-                                Context.RecipesImages.Remove(recipeImage);
+                                Context.RecipeImages.Remove(recipeImage);
                             }
-                            Context.RecipesImages.Add(newPhoto);
+                            Context.RecipeImages.Add(newPhoto);
                             SaveChanges();
                         }
                         catch (Exception)
@@ -145,7 +145,7 @@ namespace HomeCook.Services
         }
         public string GetRecipeMainImage(long recipeId)
         {
-            var recipeMainImage = Context.RecipesImages.FirstOrDefault(x => x.RecipeId == recipeId && x.MainPicture == true);
+            var recipeMainImage = Context.RecipeImages.FirstOrDefault(x => x.RecipeId == recipeId && x.MainPicture == true);
 
             if (recipeMainImage is null)
             {

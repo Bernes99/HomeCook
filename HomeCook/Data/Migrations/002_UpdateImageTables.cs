@@ -7,28 +7,24 @@ namespace HomeCook.Data.Migrations
     {
         public override void Up()
         {
-            if (Schema.Schema("App").Table("ProfileImages").Exists())
+            if (Schema.Schema("App").Table("ProfileImage").Exists())
             {
-                Alter.Table("ProfileImages").InSchema("App").AddColumn("Path").AsText().Nullable();
-                //Alter.Table("ProfileImages").InSchema("App").AlterColumn("Value").AsBinary().Nullable();
+                Alter.Table("ProfileImage").InSchema("App").AddColumn("Path").AsText().Nullable();
             }
-            if (Schema.Schema("App").Table("RecipesImages").Exists())
+            if (Schema.Schema("App").Table("RecipeImage").Exists())
             {
-                Alter.Table("RecipesImages").InSchema("App").AddColumn("Path").AsText().Nullable();
-                //Alter.Table("RecipesImages").InSchema("App").AlterColumn("Value").AsBinary().Nullable();
+                Alter.Table("RecipeImage").InSchema("App").AddColumn("Path").AsText().Nullable();
             }
         }
         public override void Down()
         {
-            if (Schema.Schema("App").Table("ProfileImages").Exists())
+            if (Schema.Schema("App").Table("ProfileImage").Exists())
             {
-                Delete.Column("Path").FromTable("ProfileImages").InSchema("App");
-                //Alter.Table("ProfileImages").InSchema("App").AlterColumn("Value").AsInt64Text().Nullable();
+                Delete.Column("Path").FromTable("ProfileImage").InSchema("App");
             }
-            if (Schema.Schema("App").Table("RecipesImages").Exists())
+            if (Schema.Schema("App").Table("RecipeImage").Exists())
             {
-                Delete.Column("Path").FromTable("RecipesImages").InSchema("App");
-                //Alter.Table("RecipesImages").InSchema("App").AlterColumn("Value").AsInt64Text().Nullable();
+                Delete.Column("Path").FromTable("RecipeImage").InSchema("App");
             }
         }
     }

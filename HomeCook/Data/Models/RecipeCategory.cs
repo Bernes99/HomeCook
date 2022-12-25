@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace HomeCook.Data.Models
 {
-    public partial class RecipesCategory : IEntity
+    public partial class RecipeCategory : IEntity
     {
         public long Id { get; set; }
         public string PublicId { get; set; } = null!;

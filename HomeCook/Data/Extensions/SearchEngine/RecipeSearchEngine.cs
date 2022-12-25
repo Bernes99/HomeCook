@@ -120,8 +120,8 @@ namespace HomeCook.Data.Extensions.SearchEngine
             var recipe = entity;
 
             if (recipe.RecipeProducts is null ||
-                recipe.RecipesCategories is null ||
-                recipe.RecipesTags is null)
+                recipe.RecipeCategories is null ||
+                recipe.RecipeTags is null)
             {
                 throw new ArgumentException(
                     "Related entity was not eagerly loaded and " +
@@ -184,13 +184,13 @@ namespace HomeCook.Data.Extensions.SearchEngine
                 document.Add(field);
             });
 
-            recipe.RecipesCategories.ToList().ForEach(x =>
+            recipe.RecipeCategories.ToList().ForEach(x =>
                 document.Add(new TextField(
                     IndexField.Category.ToString(),
                     x.Category.Name, //+ " {" + x.Id + "}",
                     Field.Store.YES)));
 
-            recipe.RecipesTags.ToList().ForEach(x =>
+            recipe.RecipeTags.ToList().ForEach(x =>
                 document.Add(new TextField(
                     IndexField.Tag.ToString(),
                     x.Tag.Name, //+ " {" + x.Id + "}",

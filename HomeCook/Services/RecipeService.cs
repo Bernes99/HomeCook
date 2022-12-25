@@ -66,7 +66,7 @@ namespace HomeCook.Services
                 {
                     throw new CategoryException(CategoryException.SomethingWentWrong); //TODO exeption
                 }
-                newRecipe.RecipesCategories.Add(new RecipesCategory { RecipeId = newRecipe.Id, CategoryId = categoryId.Key });
+                newRecipe.RecipeCategories.Add(new RecipeCategory { RecipeId = newRecipe.Id, CategoryId = categoryId.Key });
             }
 
             Create(newRecipe);
@@ -76,7 +76,7 @@ namespace HomeCook.Services
 
             foreach (var id in tagsInternalIds)
             {
-                newRecipe.RecipesTags.Add(new RecipesTag { TagId = id, RecipeId = newRecipe.Id });
+                newRecipe.RecipeTags.Add(new RecipeTag { TagId = id, RecipeId = newRecipe.Id });
             }
 
             _imageService.AddOrUpdateRecipeImage(mainPicture, newRecipe.Id, true);
@@ -86,16 +86,16 @@ namespace HomeCook.Services
             }
 
             _recipeSearchEngine.AddOrUpdateRange(Context.Recipes.Include(x => x.RecipeProducts).ThenInclude(x => x.Product)
-                .Include(x => x.RecipesTags).ThenInclude(x => x.Tag)
-                .Include(x => x.RecipesCategories).ThenInclude(x => x.Category).Where(x => x.Id == newRecipe.Id).ToList());
+                .Include(x => x.RecipeTags).ThenInclude(x => x.Tag)
+                .Include(x => x.RecipeCategories).ThenInclude(x => x.Category).Where(x => x.Id == newRecipe.Id).ToList());
 
             return newRecipe;
         }
         public async Task<RecipeDetailsDto> UpdateRecipe(AddRecipeDto model, string recipePublicId)
         {
             var recipe = Context.Recipes.Include(x => x.RecipeProducts).ThenInclude(x => x.Product)
-                .Include(x => x.RecipesTags).ThenInclude(x => x.Tag)
-                .Include(x => x.RecipesCategories).ThenInclude(x => x.Category).FirstOrDefault(x => x.PublicId == recipePublicId);
+                .Include(x => x.RecipeTags).ThenInclude(x => x.Tag)
+                .Include(x => x.RecipeCategories).ThenInclude(x => x.Category).FirstOrDefault(x => x.PublicId == recipePublicId);
             if (recipe is null)
             {
                 throw new NullReferenceException(); //TODO
@@ -125,7 +125,7 @@ namespace HomeCook.Services
                 throw new CategoryException(ProductException.CantAddManyOfTheSameProduscts);//TODO exeption
             }
 
-            var previousRecipeCategories = recipe.RecipesCategories.ToList();
+            var previousRecipeCategories = recipe.RecipeCategories.ToList();
             Context.RemoveRange(previousRecipeCategories);
             SaveChanges();
             foreach (var category in model.CategoriesIds)
@@ -135,18 +135,18 @@ namespace HomeCook.Services
                 {
                     throw new CategoryException(CategoryException.SomethingWentWrong); //TODO exeption
                 }
-                recipe.RecipesCategories.Add(new RecipesCategory { RecipeId = recipe.Id, CategoryId = categoryId.Key });
+                recipe.RecipeCategories.Add(new RecipeCategory { RecipeId = recipe.Id, CategoryId = categoryId.Key });
             }
             AddTags(model.Tags);
             var tagsInternalIds = GetTagsInternalIds(model.Tags);
                 
 
-            var previousRecipeTags = recipe.RecipesTags.ToList();
+            var previousRecipeTags = recipe.RecipeTags.ToList();
             Context.RemoveRange(previousRecipeTags);
             SaveChanges();
             foreach (var id in tagsInternalIds)
             {
-                recipe.RecipesTags.Add(new RecipesTag { TagId = id, RecipeId = recipe.Id });
+                recipe.RecipeTags.Add(new RecipeTag { TagId = id, RecipeId = recipe.Id });
             }
 
 
@@ -201,10 +201,10 @@ namespace HomeCook.Services
         public async Task<RecipeDetailsDto> GetRecipeDetails(long recipeInternalId)
         {
             var recipe = Context.Recipes.Include(x => x.RecipeProducts).ThenInclude(x => x.Product)
-                .Include(x => x.RecipesTags).ThenInclude(x => x.Tag)
-                .Include(x => x.RecipesCategories).ThenInclude(x => x.Category)
+                .Include(x => x.RecipeTags).ThenInclude(x => x.Tag)
+                .Include(x => x.RecipeCategories).ThenInclude(x => x.Category)
                 .Include(x => x.Comments) // TODO to mozna pominac
-                .Include(x => x.RecipesImages).FirstOrDefault(x => x.Id == recipeInternalId);
+                .Include(x => x.RecipeImages).FirstOrDefault(x => x.Id == recipeInternalId);
             if (recipe == null)
             {
                 throw new Exception("fail"); //TODO change Exeption
@@ -223,14 +223,14 @@ namespace HomeCook.Services
             recipeDto.Products = Mapper.Map<List<RecipeProductResponseDto>>(products);
 
             var categories = new List<Category>();
-            foreach (var item in recipe.RecipesCategories)
+            foreach (var item in recipe.RecipeCategories)
             {
                 categories.Add(item.Category);
             }
             recipeDto.Categories = Mapper.Map<List<CategoryDto>>(categories);
 
             var images = new List<string>();
-            foreach (var item in recipe.RecipesImages)
+            foreach (var item in recipe.RecipeImages)
             {
                 if (item.MainPicture)
                 {
@@ -244,7 +244,7 @@ namespace HomeCook.Services
             recipeDto.Images = images;
 
             var tags = new List<Tag>();
-            foreach (var item in recipe.RecipesTags)
+            foreach (var item in recipe.RecipeTags)
             {
                 tags.Add(item.Tag);
             }
@@ -390,8 +390,8 @@ namespace HomeCook.Services
         public void InitialIndexes()
         {
             var recipies = Context.Recipes.Include(x => x.RecipeProducts).ThenInclude(x => x.Product)
-                .Include(x => x.RecipesTags).ThenInclude(x => x.Tag)
-                .Include(x => x.RecipesCategories).ThenInclude(x => x.Category).ToList();
+                .Include(x => x.RecipeTags).ThenInclude(x => x.Tag)
+                .Include(x => x.RecipeCategories).ThenInclude(x => x.Category).ToList();
             _recipeSearchEngine.AddOrUpdateRange(recipies);
         }
     }

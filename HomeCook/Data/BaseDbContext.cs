@@ -24,10 +24,10 @@ namespace HomeCook.Data
         public virtual DbSet<ProductCategory> ProductCategories { get; set; } = null!;
         public virtual DbSet<ProfileImage> ProfileImages { get; set; } = null!;
         public virtual DbSet<Recipe> Recipes { get; set; } = null!;
+        public virtual DbSet<RecipeCategory> RecipeCategories { get; set; } = null!;
+        public virtual DbSet<RecipeImage> RecipeImages { get; set; } = null!;
         public virtual DbSet<RecipeProduct> RecipeProducts { get; set; } = null!;
-        public virtual DbSet<RecipesCategory> RecipesCategories { get; set; } = null!;
-        public virtual DbSet<RecipesImage> RecipesImages { get; set; } = null!;
-        public virtual DbSet<RecipesTag> RecipesTags { get; set; } = null!;
+        public virtual DbSet<RecipeTag> RecipeTags { get; set; } = null!;
         public virtual DbSet<Tag> Tags { get; set; } = null!;
         public virtual DbSet<UserProduct> UserProducts { get; set; } = null!;
 
@@ -47,9 +47,9 @@ namespace HomeCook.Data
 
             modelBuilder.Entity<Category>(entity =>
             {
-                entity.ToTable("Categories", "App");
+                entity.ToTable("Category", "App");
 
-                entity.HasIndex(e => e.PublicId, "IX_Categories_PublicId")
+                entity.HasIndex(e => e.PublicId, "IX_Category_PublicId")
                     .IsUnique();
 
                 entity.Property(e => e.Id).UseIdentityAlwaysColumn();
@@ -64,9 +64,9 @@ namespace HomeCook.Data
 
             modelBuilder.Entity<Comment>(entity =>
             {
-                entity.ToTable("Comments", "App");
+                entity.ToTable("Comment", "App");
 
-                entity.HasIndex(e => e.PublicId, "IX_Comments_PublicId")
+                entity.HasIndex(e => e.PublicId, "IX_Comment_PublicId")
                     .IsUnique();
 
                 entity.Property(e => e.Id).UseIdentityAlwaysColumn();
@@ -91,15 +91,14 @@ namespace HomeCook.Data
                 entity.HasOne(d => d.Recipe)
                     .WithMany(p => p.Comments)
                     .HasForeignKey(d => d.RecipeId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Comments_RecipeId");
+                    .HasConstraintName("FK_Comment_RecipeId");
             });
 
             modelBuilder.Entity<Product>(entity =>
             {
-                entity.ToTable("Products", "App");
+                entity.ToTable("Product", "App");
 
-                entity.HasIndex(e => e.PublicId, "IX_Products_PublicId")
+                entity.HasIndex(e => e.PublicId, "IX_Product_PublicId")
                     .IsUnique();
 
                 entity.Property(e => e.Id).UseIdentityAlwaysColumn();
@@ -137,9 +136,9 @@ namespace HomeCook.Data
 
             modelBuilder.Entity<ProfileImage>(entity =>
             {
-                entity.ToTable("ProfileImages", "App");
+                entity.ToTable("ProfileImage", "App");
 
-                entity.HasIndex(e => e.PublicId, "IX_ProfileImages_PublicId")
+                entity.HasIndex(e => e.PublicId, "IX_ProfileImage_PublicId")
                     .IsUnique();
 
                 entity.Property(e => e.Id).UseIdentityAlwaysColumn();
@@ -160,9 +159,9 @@ namespace HomeCook.Data
 
             modelBuilder.Entity<Recipe>(entity =>
             {
-                entity.ToTable("Recipes", "App");
+                entity.ToTable("Recipe", "App");
 
-                entity.HasIndex(e => e.PublicId, "IX_Recipes_PublicId")
+                entity.HasIndex(e => e.PublicId, "IX_Recipe_PublicId")
                     .IsUnique();
 
                 entity.Property(e => e.Id).UseIdentityAlwaysColumn();
@@ -197,6 +196,53 @@ namespace HomeCook.Data
                 entity.Property(e => e.Title).HasMaxLength(65535);
             });
 
+            modelBuilder.Entity<RecipeCategory>(entity =>
+            {
+                entity.ToTable("RecipeCategory", "App");
+
+                entity.HasIndex(e => e.PublicId, "IX_RecipeCategory_PublicId")
+                    .IsUnique();
+
+                entity.Property(e => e.Id).UseIdentityAlwaysColumn();
+
+                entity.Property(e => e.PublicId)
+                    .HasMaxLength(36)
+                    .HasDefaultValueSql("(uuid_generate_v4())::character(36)")
+                    .IsFixedLength();
+
+                entity.HasOne(d => d.Category)
+                    .WithMany(p => p.RecipeCategories)
+                    .HasForeignKey(d => d.CategoryId)
+                    .HasConstraintName("FK_RecipeCategory_CategoryId");
+
+                entity.HasOne(d => d.Recipe)
+                    .WithMany(p => p.RecipeCategories)
+                    .HasForeignKey(d => d.RecipeId)
+                    .HasConstraintName("FK_RecipeCategory_RecipeId");
+            });
+
+            modelBuilder.Entity<RecipeImage>(entity =>
+            {
+                entity.ToTable("RecipeImage", "App");
+
+                entity.HasIndex(e => e.PublicId, "IX_RecipeImage_PublicId")
+                    .IsUnique();
+
+                entity.Property(e => e.Id).UseIdentityAlwaysColumn();
+
+                entity.Property(e => e.Name).HasMaxLength(65535);
+
+                entity.Property(e => e.PublicId)
+                    .HasMaxLength(36)
+                    .HasDefaultValueSql("(uuid_generate_v4())::character(36)")
+                    .IsFixedLength();
+
+                entity.HasOne(d => d.Recipe)
+                    .WithMany(p => p.RecipeImages)
+                    .HasForeignKey(d => d.RecipeId)
+                    .HasConstraintName("FK_RecipeImage_RecipeId");
+            });
+
             modelBuilder.Entity<RecipeProduct>(entity =>
             {
                 entity.ToTable("RecipeProduct", "App");
@@ -220,62 +266,14 @@ namespace HomeCook.Data
                 entity.HasOne(d => d.Recipe)
                     .WithMany(p => p.RecipeProducts)
                     .HasForeignKey(d => d.RecipeId)
-                    .HasConstraintName("FK_UserProducts_RecipeId");
+                    .HasConstraintName("FK_UserProduct_RecipeId");
             });
 
-            modelBuilder.Entity<RecipesCategory>(entity =>
+            modelBuilder.Entity<RecipeTag>(entity =>
             {
-                entity.ToTable("RecipesCategories", "App");
+                entity.ToTable("RecipeTag", "App");
 
-                entity.HasIndex(e => e.PublicId, "IX_RecipesCategories_PublicId")
-                    .IsUnique();
-
-                entity.Property(e => e.Id).UseIdentityAlwaysColumn();
-
-                entity.Property(e => e.PublicId)
-                    .HasMaxLength(36)
-                    .HasDefaultValueSql("(uuid_generate_v4())::character(36)")
-                    .IsFixedLength();
-
-                entity.HasOne(d => d.Category)
-                    .WithMany(p => p.RecipesCategories)
-                    .HasForeignKey(d => d.CategoryId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_RecipesCategories_CategoryId");
-
-                entity.HasOne(d => d.Recipe)
-                    .WithMany(p => p.RecipesCategories)
-                    .HasForeignKey(d => d.RecipeId)
-                    .HasConstraintName("FK_RecipesCategories_RecipeId");
-            });
-
-            modelBuilder.Entity<RecipesImage>(entity =>
-            {
-                entity.ToTable("RecipesImages", "App");
-
-                entity.HasIndex(e => e.PublicId, "IX_RecipesImages_PublicId")
-                    .IsUnique();
-
-                entity.Property(e => e.Id).UseIdentityAlwaysColumn();
-
-                entity.Property(e => e.Name).HasMaxLength(65535);
-
-                entity.Property(e => e.PublicId)
-                    .HasMaxLength(36)
-                    .HasDefaultValueSql("(uuid_generate_v4())::character(36)")
-                    .IsFixedLength();
-
-                entity.HasOne(d => d.Recipe)
-                    .WithMany(p => p.RecipesImages)
-                    .HasForeignKey(d => d.RecipeId)
-                    .HasConstraintName("FK_RecipesImages_RecipeId");
-            });
-
-            modelBuilder.Entity<RecipesTag>(entity =>
-            {
-                entity.ToTable("RecipesTags", "App");
-
-                entity.HasIndex(e => e.PublicId, "IX_RecipesTags_PublicId")
+                entity.HasIndex(e => e.PublicId, "IX_RecipeTag_PublicId")
                     .IsUnique();
 
                 entity.Property(e => e.Id).UseIdentityAlwaysColumn();
@@ -286,22 +284,21 @@ namespace HomeCook.Data
                     .IsFixedLength();
 
                 entity.HasOne(d => d.Recipe)
-                    .WithMany(p => p.RecipesTags)
+                    .WithMany(p => p.RecipeTags)
                     .HasForeignKey(d => d.RecipeId)
-                    .HasConstraintName("FK_RecipesTags_RecipeId");
+                    .HasConstraintName("FK_RecipeTag_RecipeId");
 
                 entity.HasOne(d => d.Tag)
-                    .WithMany(p => p.RecipesTags)
+                    .WithMany(p => p.RecipeTags)
                     .HasForeignKey(d => d.TagId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_RecipesTags_TagId");
+                    .HasConstraintName("FK_RecipeTag_TagId");
             });
 
             modelBuilder.Entity<Tag>(entity =>
             {
-                entity.ToTable("Tags", "App");
+                entity.ToTable("Tag", "App");
 
-                entity.HasIndex(e => e.PublicId, "IX_Tags_PublicId")
+                entity.HasIndex(e => e.PublicId, "IX_Tag_PublicId")
                     .IsUnique();
 
                 entity.Property(e => e.Id).UseIdentityAlwaysColumn();
@@ -316,14 +313,12 @@ namespace HomeCook.Data
 
             modelBuilder.Entity<UserProduct>(entity =>
             {
-                entity.ToTable("UserProducts", "App");
+                entity.ToTable("UserProduct", "App");
 
-                entity.HasIndex(e => e.PublicId, "IX_UserProducts_PublicId")
+                entity.HasIndex(e => e.PublicId, "IX_UserProduct_PublicId")
                     .IsUnique();
 
                 entity.Property(e => e.Id).UseIdentityAlwaysColumn();
-
-                entity.Property(e => e.Amount).HasMaxLength(65535);
 
                 entity.Property(e => e.ExpirationDate).HasColumnType("timestamp without time zone");
 
@@ -340,7 +335,7 @@ namespace HomeCook.Data
                     .WithMany(p => p.UserProducts)
                     .HasForeignKey(d => d.ProductId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_UserProducts_ProductId");
+                    .HasConstraintName("FK_UserProduct_ProductId");
             });
 
             OnModelCreatingPartial(modelBuilder);

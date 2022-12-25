@@ -7,13 +7,13 @@ namespace HomeCook.Data.Models
     {
         public Tag()
         {
-            RecipesTags = new HashSet<RecipesTag>();
+            RecipeTags = new HashSet<RecipeTag>();
         }
 
         public long Id { get; set; }
         public string PublicId { get; set; } = null!;
         public string Name { get; set; } = null!;
 
-        public virtual ICollection<RecipesTag> RecipesTags { get; set; }
+        public virtual ICollection<RecipeTag> RecipeTags { get; set; }
     }
 }
