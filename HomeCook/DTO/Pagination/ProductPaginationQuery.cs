@@ -1,15 +1,13 @@
-﻿using FluentValidation;
-using HomeCook.Data.Enums;
+﻿using HomeCook.Data.Enums;
 using HomeCook.Data.Extensions;
-using HomeCook.DTO;
-using Microsoft.IdentityModel.Tokens;
+using HomeCook.Data.Models;
 using System.ComponentModel.DataAnnotations;
+using FluentValidation;
 
-namespace HomeCook.Data.Models.CustomModels
+namespace HomeCook.DTO.Pagination
 {
-    public class PaginationQuery : IValidatableObject
+    public class ProductPaginationQuery : IValidatableObject
     {
-        public string? SearchPhrase { get; set; }
         public int PageNumber { get; set; }
         public int PageSize { get; set; }
         public string? SortBy { get; set; }
@@ -18,17 +16,16 @@ namespace HomeCook.Data.Models.CustomModels
         public IEnumerable<ValidationResult> Validate(System.ComponentModel.DataAnnotations.ValidationContext validationContext)
         {
             int[] allowedPagedSizes = new[] { 5, 10, 15 };
-            string[] allowedSortByCollumnNames = { 
-                nameof(AppUser.firstName).ToUpper(),
-                nameof(AppUser.surname).ToUpper(),
-                nameof(AppUser.Email).ToUpper(),
-                nameof(AppUser.LastLogin).ToUpper()
+            string[] allowedSortByCollumnNames = {
+                nameof(HomeCook.Data.Models.Product.Name).ToUpper(),
+                nameof(HomeCook.Data.Models.Product.Calories).ToUpper(),
+                nameof(HomeCook.Data.Models.Product.UnitType).ToUpper(),
             };
 
-            return this.Rules<PaginationQuery>(v =>
+            return this.Rules<ProductPaginationQuery>(v =>
             {
                 v.RuleFor(x => x.PageNumber).GreaterThanOrEqualTo(1);
-                v.RuleFor(x => x.PageSize).Custom((value,context) =>
+                v.RuleFor(x => x.PageSize).Custom((value, context) =>
                 {
                     if (!allowedPagedSizes.Contains(value))
                     {
@@ -36,7 +33,7 @@ namespace HomeCook.Data.Models.CustomModels
                     }
                 });
                 v.RuleFor(x => x.SortBy).Must(v => string.IsNullOrEmpty(v) || allowedSortByCollumnNames.Contains(v.ToUpper()))
-                .WithMessage($"Sort by is optional, or must be in [{string.Join(",",allowedSortByCollumnNames)}]");
+                .WithMessage($"Sort by is optional, or must be in [{string.Join(",", allowedSortByCollumnNames)}]");
             })
             .Validate(this)
             .Result();

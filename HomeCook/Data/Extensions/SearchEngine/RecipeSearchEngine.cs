@@ -270,7 +270,7 @@ namespace HomeCook.Data.Extensions.SearchEngine
             var indexSearcher = new IndexSearcher(directoryReader);
 
 
-            var hits = indexSearcher.Search(query, int.MaxValue).ScoreDocs;
+            var hits = indexSearcher.Search(query, 10).ScoreDocs;
 
             var recipes = new List<LuceneRecipeSearchResultItem>();
             foreach (var hit in hits)
@@ -299,7 +299,7 @@ namespace HomeCook.Data.Extensions.SearchEngine
             {
                 return criteria;
             }
-            var bQuery = new BooleanQuery();
+            var bQuery = new BooleanQuery() { };
 
             foreach (var product in filters.Products)
             {
@@ -311,13 +311,18 @@ namespace HomeCook.Data.Extensions.SearchEngine
             }
             if (filters.Rating > 1f)
             {
-                var ratingFilter = NumericRangeFilter.NewSingleRange(IndexField.Rating.ToString(),filters.Rating,null,true,false);
-                bQuery.Add(new FilteredQuery(bQuery,ratingFilter),Occur.SHOULD);
+                //var ratingFilter = NumericRangeFilter.NewSingleRange(IndexField.Rating.ToString(), 1,filters.Rating,5,true,true);
+                //bQuery.Add(new FilteredQuery(bQuery,ratingFilter),Occur.SHOULD);
+
+                var ratingQuery = NumericRangeQuery.NewSingleRange(IndexField.Rating.ToString(), 1, filters.Rating, 5, true, true);
+                bQuery.Add(ratingQuery, Occur.MUST);
             }
             if (filters.Difficulty > 1f)
             {
-                var difFilter = NumericRangeFilter.NewSingleRange(IndexField.Difficulty.ToString(), filters.Difficulty, null, true, false);
-                bQuery.Add(new FilteredQuery(bQuery, difFilter), Occur.SHOULD);
+                //var difFilter = NumericRangeFilter.NewSingleRange(IndexField.Difficulty.ToString(), 1, filters.Difficulty, 10, true, true);
+                //bQuery.Add(new FilteredQuery(bQuery, difFilter), Occur.SHOULD);
+                var difQuery = NumericRangeQuery.NewSingleRange(IndexField.Difficulty.ToString(), 1, filters.Difficulty, 10, true, true);
+                bQuery.Add(difQuery, Occur.MUST);
             }
             bQuery.Add(criteria, Occur.MUST);
 

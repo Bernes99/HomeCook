@@ -14,7 +14,7 @@ namespace HomeCook.DTO.Recipe
         public string PreparingTime { get; set; }
         public float Difficulty { get; set; }
         public RecipeUserDto Author { get; set; }
-        public List<ProductResponseDto> Products { get; set; }
+        public List<RecipeProductResponseDto> Products { get; set; }
         public List<CategoryDto> Categories { get; set; }
         public string MainImage { get; set; }
         public List<string> Images { get; set; }

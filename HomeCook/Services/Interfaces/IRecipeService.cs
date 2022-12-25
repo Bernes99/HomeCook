@@ -17,6 +17,7 @@ namespace HomeCook.Services.Interfaces
         Task<RecipeDetailsDto> GetRecipeDetails(string recipePublicId);
         Task<RecipeDetailsDto> GetRecipeDetails(long recipeInternalId);
         Task<List<LuceneRecipeSearchResultItem>> GetRecipesList(string searchString, RecipeFilters filters);
+        Task<List<RecipeDetailsDto>> GetUserRecipes(string userId);
         void InitialIndexes();
         Task<RecipeDetailsDto> UpdateRecipe(AddRecipeDto model, string recipePublicId);
     }

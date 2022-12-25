@@ -12,7 +12,7 @@ namespace HomeCook.Services.Interfaces
         Task<AppUser> FindUserAsync(string emailAddress);
         Task<AppUser> FindUserAsyncbyId(string userId);
         Task<UserDto> GetUserDto(string id);
-        PaginationResult<UserDto> GetUsers(PaginationQuery query);
+        PaginationResult<UserDto> GetUsers(UserPaginationQuery query);
         Task<IdentityResult> UpdateUser(string userId, UserUpdateDto model);
     }
 }

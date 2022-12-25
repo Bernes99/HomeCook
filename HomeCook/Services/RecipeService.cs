@@ -71,7 +71,9 @@ namespace HomeCook.Services
 
             Create(newRecipe);
 
-            var tagsInternalIds = AddTags(model.Tags);
+            AddTags(model.Tags);
+            var tagsInternalIds = GetTagsInternalIds(model.Tags);
+
             foreach (var id in tagsInternalIds)
             {
                 newRecipe.RecipesTags.Add(new RecipesTag { TagId = id, RecipeId = newRecipe.Id });
@@ -135,7 +137,9 @@ namespace HomeCook.Services
                 }
                 recipe.RecipesCategories.Add(new RecipesCategory { RecipeId = recipe.Id, CategoryId = categoryId.Key });
             }
-            var tagsInternalIds = AddTags(model.Tags);
+            AddTags(model.Tags);
+            var tagsInternalIds = GetTagsInternalIds(model.Tags);
+                
 
             var previousRecipeTags = recipe.RecipesTags.ToList();
             Context.RemoveRange(previousRecipeTags);
@@ -167,6 +171,23 @@ namespace HomeCook.Services
             return true;
         }
 
+        public async Task<List<RecipeDetailsDto>> GetUserRecipes(string userId)
+        {
+            var recipesId = Context.Recipes.Where(x => x.AuthorId == userId && x.DeletedBy == null && x.DateDeletedUtc == null).Select(x => x.Id).ToList();
+
+            var recipes = new List<RecipeDetailsDto>();
+            foreach (var id in recipesId)
+            {
+                var recipe = await GetRecipeDetails(id);
+                if (recipe is null)
+                {
+                    throw new NullReferenceException();
+                }
+                recipes.Add(recipe);
+            }
+            return recipes;
+        }
+
         public async Task<RecipeDetailsDto> GetRecipeDetails(string recipePublicId)
         {
             var recipe = Context.Recipes.FirstOrDefault(x => x.PublicId == recipePublicId);
@@ -194,12 +215,12 @@ namespace HomeCook.Services
             var recipeDto = Mapper.Map<RecipeDetailsDto>(recipe);
             recipeDto.Author = Mapper.Map<RecipeUserDto>(user);
 
-            var products = new List<Product>();
+            var products = new List<RecipeProduct>();
             foreach (var item in recipe.RecipeProducts)
             {
-                products.Add(item.Product);
+                products.Add(item);
             }
-            recipeDto.Products = Mapper.Map<List<ProductResponseDto>>(products);
+            recipeDto.Products = Mapper.Map<List<RecipeProductResponseDto>>(products);
 
             var categories = new List<Category>();
             foreach (var item in recipe.RecipesCategories)
@@ -289,6 +310,7 @@ namespace HomeCook.Services
                 var user = await _userService.FindUserAsyncbyId(comment.Author);
                 var displayName = user.firstName + " " + user.surname;
                 comment.Author = String.IsNullOrWhiteSpace(displayName) ? user.UserName : displayName;
+                comment.AuthorProfile = _imageService.GetProfileImage(user.Id);
             }
 
             return commentsDto;
@@ -359,7 +381,10 @@ namespace HomeCook.Services
             return Context.Tags.Where(x=> tags.Contains(x.Name)).Select(x => x.Id).ToList();
 
         }
-
+        private List<long> GetTagsInternalIds(List<string> tags)
+        {
+            return Context.Tags.Where(x => tags.Contains(x.Name)).Select(x => x.Id).ToList();
+        }
 
 
         public void InitialIndexes()

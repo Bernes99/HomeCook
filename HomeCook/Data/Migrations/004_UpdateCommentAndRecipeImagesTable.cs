@@ -24,6 +24,7 @@ namespace HomeCook.Data.Migrations
                     .AsInt64()
                     .NotNullable()
                     .ForeignKey("FK_Comments_RecipeId", "App", "Recipes", "Id")
+                    .OnDeleteOrUpdate(System.Data.Rule.Cascade)
                     .AddColumn("DateCreatedUtc")
                     .AsDateTime2()
                     .NotNullable();

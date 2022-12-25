@@ -18,19 +18,21 @@ namespace HomeCook.Controllers
         private readonly IUserService _userService;
         private readonly IImageService _imageService;
         private readonly IProductService _productService;
+        private readonly IRecipeService _recipeService;
 
-        public UserController(IUserService userService, IImageService imageService, IProductService productService)
+        public UserController(IUserService userService, IImageService imageService, IProductService productService, IRecipeService recipeService)
         {
             _userService = userService;
             _imageService = imageService;
             _productService = productService;
+            _recipeService = recipeService;
         }
 
         #region User
         [HttpGet("GetAllUsers")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
             Roles = "Admin")]
-        public async Task<ActionResult> GetAllUsers([FromQuery] PaginationQuery query)
+        public async Task<ActionResult> GetAllUsers([FromQuery] UserPaginationQuery query)
         {
             var users = _userService.GetUsers(query);
             return Ok(users);
@@ -95,7 +97,7 @@ namespace HomeCook.Controllers
             _imageService.UpdateProfileImage(file, Id);
             return Ok();
         }
-
+        [AllowAnonymous]
         [HttpGet("{Id}/ProfileImage")]
         public async Task<ActionResult> GetProfileImage([FromRoute] string Id)
         {
@@ -109,7 +111,7 @@ namespace HomeCook.Controllers
         #endregion
 
 
-        [HttpPut("{Id}/Products/Update")]
+        [HttpPost("{Id}/Products/AddOrUpdate")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
             Roles = "Admin,User")]
         public async Task<ActionResult> UpdateUserProduct([FromRoute] string Id, [FromBody] List<AddUserProductDto> model)
@@ -122,7 +124,7 @@ namespace HomeCook.Controllers
             {
                 return Unauthorized();
             }
-            await _productService.UpdateUserProducts(model, Id);
+            await _productService.AddOrUpdateUserProducts(model, Id);
 
             return Ok();
         }
@@ -145,7 +147,7 @@ namespace HomeCook.Controllers
             return Ok();
         }
 
-        [HttpGet("{Id}/Products/All")]
+        [HttpGet("{Id}/Products")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
             Roles = "Admin,User")]
         public async Task<ActionResult> GetUserProdusctsList([FromRoute] string Id)
@@ -158,6 +160,19 @@ namespace HomeCook.Controllers
             return Ok(result);
         }
 
+        [HttpGet("{Id}/Recipes")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+            Roles = "Admin,User")]
+        public async Task<ActionResult> GetRecipe([FromRoute] string Id)
+        {
+            if (!IsSelfOrAdmin(Id))
+            {
+                return Unauthorized();
+            }
+            var result = await _recipeService.GetUserRecipes(Id);
+
+            return Ok(result);
+        }
 
         private bool IsSelfOrAdmin(string uesrId)
         {

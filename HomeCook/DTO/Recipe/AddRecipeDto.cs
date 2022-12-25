@@ -33,7 +33,7 @@ namespace HomeCook.DTO.Recipe
                 v.RuleFor(x => x.Portion).NotEmpty();
                 v.RuleFor(x => x.AuthorId).NotEmpty();
                 v.RuleFor(x => x.PreparingTime).NotEmpty();
-                v.RuleFor(x => x.Difficulty).NotEmpty().LessThanOrEqualTo(5f).GreaterThanOrEqualTo(0f);
+                v.RuleFor(x => x.Difficulty).NotEmpty().LessThanOrEqualTo(10f).GreaterThanOrEqualTo(0f);
                 v.RuleFor(x => x.Products).NotEmpty();
                 v.RuleFor(x => x.CategoriesIds).NotEmpty();
             })

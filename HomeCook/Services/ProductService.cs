@@ -1,13 +1,17 @@
 ﻿using AutoMapper;
 using HomeCook.Data;
 using HomeCook.Data.CustomException;
+using HomeCook.Data.Enums;
 using HomeCook.Data.Extensions;
 using HomeCook.Data.Models;
 using HomeCook.DTO;
+using HomeCook.DTO.Pagination;
 using HomeCook.DTO.Product;
 using HomeCook.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 
 namespace HomeCook.Services
@@ -161,6 +165,48 @@ namespace HomeCook.Services
             var productListDto = Mapper.Map<List<ProductResponseDto>>(products);
             return productListDto;
         }
+        public async Task<PaginationResult<ProductResponseDto>> GetProductList(string category, ProductPaginationQuery query)
+        {
+
+            if (query is not null && query.SortBy is not null)
+            {
+                query.SortBy = query.SortBy.ToUpper();
+            }
+
+            var products = !String.IsNullOrEmpty(category) ? 
+                Context.Products
+                    .Include(c => c.Category)
+                    .Where(x => x.Category.Name.ToUpper() == category.ToUpper()) :  
+                Context.Products
+                    .Include(c => c.Category);
+
+            if (products is null)
+            {
+                throw new ProductException(ProductException.SomethingWentWrong);
+            }
+
+            if (!string.IsNullOrEmpty(query.SortBy))
+            {
+                var columnsSelectors = new Dictionary<string, Expression<Func<Product, object>>>
+                {
+                    { nameof(Product.Name).ToUpper(), u => u.Name },
+                    { nameof(Product.Calories).ToUpper(), u => u.Calories },
+                    { nameof(Product.UnitType).ToUpper(), u => u.UnitType },
+                };
+                var selectedColumn = columnsSelectors[query.SortBy];
+
+                products = query.SortDirection == SortDirection.ASC ? products.OrderBy(selectedColumn) : products.OrderByDescending(selectedColumn);
+            }
+
+            var pagedProducts = products.Skip(query.PageSize * (query.PageNumber - 1))
+                .Take(query.PageSize);
+
+            var productListDto = Mapper.Map<List<ProductResponseDto>>(pagedProducts);
+
+            var productsCount = products.Count();
+            var result = new PaginationResult<ProductResponseDto>(productListDto, productsCount, query.PageSize, query.PageNumber);
+            return result;
+        }
 
         public async Task<Product> UpdateProduct(ProductDto newProduct)
         {
@@ -181,7 +227,7 @@ namespace HomeCook.Services
             return product;
         }
         #region UserProduct
-        public async Task<List<UserProduct>> UpdateUserProducts(List<AddUserProductDto> model, string userId)
+        public async Task<List<UserProduct>> AddOrUpdateUserProducts(List<AddUserProductDto> model, string userId)
         {
             //checking user
             var user = await _userService.FindUserAsyncbyId(userId);

@@ -59,7 +59,7 @@ namespace HomeCook.Controllers
             var result = await _categoryService.GetCategoryDto(Id);
             return Ok(result);
         }
-
+        [AllowAnonymous]
         [HttpGet("Category/GetCategoryList")]
         public async Task<ActionResult> GetProductCategory()
         {
@@ -67,21 +67,20 @@ namespace HomeCook.Controllers
             return Ok(result);
         }
         #endregion
-        [AllowAnonymous] //TODO delete this later
         [HttpPost("AddRecipe")]
         public async Task<ActionResult> AddRecipe( IFormFile? mainPicture,  IFormFile?[] pictures, [FromForm][ModelBinder(BinderType = typeof(FormDataJsonModelBinder))] AddRecipeDto model)
         {
-            //if (!IsSelfOrAdmin(model.AuthorId)) \\TODO uncomment this later
-            //{
-            //    return Unauthorized();
-            //}
+            if (!IsSelfOrAdmin(model.AuthorId))
+            {
+                return Unauthorized();
+            }
             var test = await _recipeService.AddRecipe(mainPicture, pictures, model);
 
             return Ok();
         }
 
         [AllowAnonymous] 
-        [HttpPost("{Id}")]
+        [HttpGet("{Id}")]
         public async Task<ActionResult> GetRecipe([FromRoute] string Id)
         {
 
@@ -125,7 +124,7 @@ namespace HomeCook.Controllers
         }
 
         [HttpPut("{Id}/UpdateMainImage")]
-        public async Task<ActionResult> UpdateRecipe([FromRoute] string Id, [FromForm] IFormFile file)
+        public async Task<ActionResult> UpdateMainImage([FromRoute] string Id, [FromForm] IFormFile file)
         {
             var recipe = _recipeService.FindRecipeByPublicId(Id);
 
@@ -167,7 +166,7 @@ namespace HomeCook.Controllers
         }
 
         [HttpPost("{Id}/AddComment")]
-        public async Task<ActionResult> AddComment([FromRoute] string Id, string text)
+        public async Task<ActionResult> AddComment([FromRoute] string Id, [FromQuery]string text)
         {
             var userId = User.Claims.FirstOrDefault(x => x.Type == "PublicId")?.Value;
             if (!IsSelfOrAdmin(userId))
@@ -178,7 +177,7 @@ namespace HomeCook.Controllers
 
             return Ok();
         }
-
+        [AllowAnonymous]
         [HttpGet("{Id}/GetComments")]
         public async Task<ActionResult> GetComments([FromRoute] string Id)
         {

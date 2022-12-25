@@ -33,7 +33,7 @@ namespace HomeCook.Services
             return await _userManager.FindByIdAsync(userId);
         }
 
-        public PaginationResult<UserDto> GetUsers(PaginationQuery query)
+        public PaginationResult<UserDto> GetUsers(UserPaginationQuery query)
         {
             string searchPhrase = "";
             if (query is not null)

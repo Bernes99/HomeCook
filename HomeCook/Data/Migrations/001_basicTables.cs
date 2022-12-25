@@ -94,6 +94,7 @@ namespace HomeCook.Data.Migrations
                    .WithPublicId()
                    .WithColumn("CategoryId").AsInt64()
                         .ForeignKey("FK_RecipesCategories_CategoryId", "App", "Categories", "Id")
+                        .OnDeleteOrUpdate(System.Data.Rule.Cascade)
                    .WithColumn("RecipeId").AsInt64()
                         .ForeignKey("FK_RecipesCategories_RecipeId", "App", "Recipes", "Id")
                         .OnDeleteOrUpdate(System.Data.Rule.Cascade);
@@ -113,6 +114,7 @@ namespace HomeCook.Data.Migrations
                    .WithPublicId()
                    .WithColumn("TagId").AsInt64()
                         .ForeignKey("FK_RecipesTags_TagId", "App", "Tags", "Id")
+                        .OnDeleteOrUpdate(System.Data.Rule.Cascade)
                    .WithColumn("RecipeId").AsInt64()
                         .ForeignKey("FK_RecipesTags_RecipeId", "App", "Recipes", "Id")
                         .OnDeleteOrUpdate(System.Data.Rule.Cascade);

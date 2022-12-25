@@ -1,4 +1,5 @@
 ﻿using HomeCook.Data.Models;
+using HomeCook.DTO.Pagination;
 using HomeCook.DTO.Product;
 using HomeCook.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -51,7 +52,7 @@ namespace HomeCook.Controllers
             var result = await _productService.GetProductCategoryDto(Id);
             return Ok(result);
         }
-
+        [AllowAnonymous]
         [HttpGet("Category/GetProductCategoryList")]
         public async Task<ActionResult> GetProductCategory()
         {
@@ -103,6 +104,14 @@ namespace HomeCook.Controllers
         }
 
         [HttpGet("GetProductList")]
+        public async Task<ActionResult> GetProductList([FromQuery] string? category, [FromQuery] ProductPaginationQuery query)
+        {
+            var result = await _productService.GetProductList(category, query);
+            return Ok(result);
+        }
+
+        [AllowAnonymous]
+        [HttpGet("GetAllProducts")]
         public async Task<ActionResult> GetProductList([FromQuery] string? category)
         {
             var result = await _productService.GetProductList(category);
