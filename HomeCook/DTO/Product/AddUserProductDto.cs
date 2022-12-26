@@ -11,14 +11,14 @@ namespace HomeCook.DTO.Product
         [JsonIgnore]
         public long ProductInternalId { get; set; }
         public DateTime? ExpirationDate { get; set; }
-        public string? Amount { get; set; }
+        public float? Amount { get; set; }
         public bool IsOnShoppingList { get; set; }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
             return this.Rules<AddUserProductDto>(v =>
             {
-                v.RuleFor(x => x.ProductInternalId).Null();
+                //v.RuleFor(x => x.ProductInternalId).Null();
             })
             .Validate(this)
             .Result();
