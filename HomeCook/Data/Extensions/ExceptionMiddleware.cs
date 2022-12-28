@@ -29,10 +29,37 @@ namespace HomeCook.Data.Extensions
         {
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-            Logger.LogError($"Something went wrong: {exception.StackTrace}");
 
             switch (exception)
             {
+
+                case RecipeException:
+                    switch (exception.Message)
+                    {
+                        case RecipeException.ReicpeDoesntExist:
+                            await context.Response.WriteAsync(new ErrorDetails()
+                            {
+                                StatusCode = StatusCodes.Status400BadRequest,
+                                Message = exception.Message
+                            }.ToString());
+                            break;
+                        case RecipeException.CommentDoesntExist:
+                            await context.Response.WriteAsync(new ErrorDetails()
+                            {
+                                StatusCode = StatusCodes.Status400BadRequest,
+                                Message = exception.Message
+                            }.ToString());
+                            break;
+                        default:
+                            await context.Response.WriteAsync(new ErrorDetails()
+                            {
+                                StatusCode = context.Response.StatusCode,
+                                Message = exception.Message
+                            }.ToString());
+                            break;
+                    }
+                    break;
+
                 case AuthException:
                     switch(exception.Message)
                     {
@@ -239,38 +266,13 @@ namespace HomeCook.Data.Extensions
 
                     }
                     break;
-                case RecipeException:
-                    switch (exception.Message)
-                    {
-                        case RecipeException.ReicpeDoesntExist:
-                            await context.Response.WriteAsync(new ErrorDetails()
-                            {
-                                StatusCode = StatusCodes.Status400BadRequest,
-                                Message = exception.Message
-                            }.ToString());
-                            break;
-                        case RecipeException.CommentDoesntExist:
-                            await context.Response.WriteAsync(new ErrorDetails()
-                            {
-                                StatusCode = StatusCodes.Status400BadRequest,
-                                Message = exception.Message
-                            }.ToString());
-                            break;
-                        default:
-                            await context.Response.WriteAsync(new ErrorDetails()
-                            {
-                                StatusCode = context.Response.StatusCode,
-                                Message = exception.Message
-                            }.ToString());
-                            break;
-                    }
-                    break;
+                
 
                 default:
                     await context.Response.WriteAsync(new ErrorDetails()
                     {
                         StatusCode = context.Response.StatusCode,
-                        Message = exception.Message//$"Exeption on: ${exception.Source} with message: {exception.Message}"
+                        Message = exception.Message
                     }.ToString());
                     break;
             }
