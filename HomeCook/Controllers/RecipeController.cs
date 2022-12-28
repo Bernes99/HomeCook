@@ -88,7 +88,6 @@ namespace HomeCook.Controllers
 
             return Ok(result);
         }
-        [AllowAnonymous]//TODO tylko do testow
         [HttpPut("{Id}")]
         public async Task<ActionResult> UpdateRecipe([FromRoute]string Id,[FromBody] AddRecipeDto model)
         {

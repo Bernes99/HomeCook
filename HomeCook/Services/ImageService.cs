@@ -79,7 +79,7 @@ namespace HomeCook.Services
             var recipe = Context.Recipes.FirstOrDefault(x => x.PublicId == recipeId);
             if (recipe is null)
             {
-                throw new ImageException(ImageException.ProfileImageError); // TODO update Exeption
+                throw new RecipeException(RecipeException.ReicpeDoesntExist);
             }
             AddOrUpdateRecipeImage(file, recipe.Id, isMainImage);
         }
@@ -128,7 +128,7 @@ namespace HomeCook.Services
                         }
                         catch (Exception)
                         {
-                            throw new AuthException(AuthException.ProfileImageError); //TODO update Exeption
+                            throw new ImageException(ImageException.RecipeImageError);
                         }
                     }
                 }
@@ -139,7 +139,7 @@ namespace HomeCook.Services
             var recipe = Context.Recipes.FirstOrDefault(x => x.PublicId == recipePublicId);
             if (recipe == null)
             {
-                throw new NullReferenceException(); //TODO 
+                throw new RecipeException(RecipeException.ReicpeDoesntExist); 
             }
             return GetRecipeMainImage(recipe.Id);
         }
@@ -147,13 +147,9 @@ namespace HomeCook.Services
         {
             var recipeMainImage = Context.RecipeImages.FirstOrDefault(x => x.RecipeId == recipeId && x.MainPicture == true);
 
-            if (recipeMainImage is null)
+            if (recipeMainImage is null || recipeMainImage.Value is null)
             {
-                throw new ImageException(ImageException.UserhasNoProfileImage); //TODO
-            }
-            if (recipeMainImage.Value is null)
-            {
-                throw new ImageException(ImageException.UserhasNoProfileImage); //TODO
+                throw new ImageException(ImageException.RecipeHasNoMainImage);
             }
             return string.Format("data:image/png;base64, {0}", Convert.ToBase64String(recipeMainImage.Value));
         }

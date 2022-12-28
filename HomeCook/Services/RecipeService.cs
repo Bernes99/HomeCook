@@ -47,7 +47,7 @@ namespace HomeCook.Services
                 var productId = productsIds.FirstOrDefault(x => product.ProductId == x.Value);
                 if (product is null)
                 {
-                    throw new ProductException(ProductException.ProductDoesntExist);//TODO exeption
+                    throw new ProductException(ProductException.ProductDoesntExist);
                 }
 
                 newRecipe.RecipeProducts.Add(new RecipeProduct { RecipeId = newRecipe.Id, ProductId = productId.Key, Amount = product.Amount });
@@ -56,7 +56,7 @@ namespace HomeCook.Services
             
             if (model.CategoriesIds.Count != model.CategoriesIds.Distinct().Count())
             {
-                throw new CategoryException(ProductException.CantAddManyOfTheSameProduscts);//TODO exeption
+                throw new CategoryException(CategoryException.CantAddManyOfTheSameCategories);
             }
 
             foreach (var category in model.CategoriesIds)
@@ -64,7 +64,7 @@ namespace HomeCook.Services
                 var categoryId = categoriesIds.FirstOrDefault(x => x.Value == category);
                 if (category is null)
                 {
-                    throw new CategoryException(CategoryException.SomethingWentWrong); //TODO exeption
+                    throw new CategoryException(CategoryException.CategoryDoesntExist);
                 }
                 newRecipe.RecipeCategories.Add(new RecipeCategory { RecipeId = newRecipe.Id, CategoryId = categoryId.Key });
             }
@@ -98,7 +98,7 @@ namespace HomeCook.Services
                 .Include(x => x.RecipeCategories).ThenInclude(x => x.Category).FirstOrDefault(x => x.PublicId == recipePublicId);
             if (recipe is null)
             {
-                throw new NullReferenceException(); //TODO
+                throw new RecipeException(RecipeException.ReicpeDoesntExist);
             }
             Mapper.Map(model, recipe);
             recipe.DateModifiedUtc = DateTime.UtcNow;
@@ -113,7 +113,7 @@ namespace HomeCook.Services
                 var productId = productsIds.FirstOrDefault(x => product.ProductId == x.Value);
                 if (product is null)
                 {
-                    throw new ProductException(ProductException.ProductDoesntExist);//TODO exeption
+                    throw new ProductException(ProductException.ProductDoesntExist);
                 }
 
                 recipe.RecipeProducts.Add(new RecipeProduct { RecipeId = recipe.Id, ProductId = productId.Key, Amount = product.Amount });
@@ -122,7 +122,7 @@ namespace HomeCook.Services
 
             if (model.CategoriesIds.Count != model.CategoriesIds.Distinct().Count())
             {
-                throw new CategoryException(ProductException.CantAddManyOfTheSameProduscts);//TODO exeption
+                throw new CategoryException(CategoryException.CantAddManyOfTheSameCategories);
             }
 
             var previousRecipeCategories = recipe.RecipeCategories.ToList();
@@ -133,7 +133,7 @@ namespace HomeCook.Services
                 var categoryId = categoriesIds.FirstOrDefault(x => x.Value == category);
                 if (category is null)
                 {
-                    throw new CategoryException(CategoryException.SomethingWentWrong); //TODO exeption
+                    throw new CategoryException(CategoryException.CategoryDoesntExist);
                 }
                 recipe.RecipeCategories.Add(new RecipeCategory { RecipeId = recipe.Id, CategoryId = categoryId.Key });
             }
@@ -193,7 +193,7 @@ namespace HomeCook.Services
             var recipe = Context.Recipes.FirstOrDefault(x => x.PublicId == recipePublicId);
             if (recipe == null)
             {
-                throw new Exception("fail"); //TODO change Exeption
+                throw new RecipeException(RecipeException.ReicpeDoesntExist);
             }
             return await GetRecipeDetails(recipe.Id);
         }
@@ -203,11 +203,11 @@ namespace HomeCook.Services
             var recipe = Context.Recipes.Include(x => x.RecipeProducts).ThenInclude(x => x.Product)
                 .Include(x => x.RecipeTags).ThenInclude(x => x.Tag)
                 .Include(x => x.RecipeCategories).ThenInclude(x => x.Category)
-                .Include(x => x.Comments) // TODO to mozna pominac
+                .Include(x => x.Comments) 
                 .Include(x => x.RecipeImages).FirstOrDefault(x => x.Id == recipeInternalId);
             if (recipe == null)
             {
-                throw new Exception("fail"); //TODO change Exeption
+                throw new RecipeException(RecipeException.ReicpeDoesntExist);
             }
 
             var user = Context.Users.FirstOrDefault(x => x.Id == recipe.AuthorId);
@@ -301,7 +301,7 @@ namespace HomeCook.Services
 
             if (recipe is null)
             {
-                throw new ArgumentNullException();//TODO
+                throw new RecipeException(RecipeException.ReicpeDoesntExist);
             }
 
             var commentsDto = Mapper.Map<List<CommentResponseDto>>(recipe.Comments);
@@ -323,7 +323,7 @@ namespace HomeCook.Services
 
             if (comment is null)
             {
-                throw new ArgumentNullException(); //TODO
+                throw new RecipeException(RecipeException.CommentDoesntExist);
             }
 
             comment.DeletedBy = userId;
@@ -336,7 +336,7 @@ namespace HomeCook.Services
             var comment = Context.Comments.FirstOrDefault(x => x.PublicId == commentId);
             if (comment is null)
             {
-                throw new ArgumentNullException(); //TODO
+                throw new RecipeException(RecipeException.CommentDoesntExist);
             }
             return comment;
         }
@@ -345,7 +345,7 @@ namespace HomeCook.Services
             var recipe = Context.Recipes.FirstOrDefault(x => x.PublicId == recipePublicId);
             if (recipe is null)
             {
-                throw new NullReferenceException(); //TODO
+                throw new RecipeException(RecipeException.ReicpeDoesntExist);
             }
             return recipe;
         }

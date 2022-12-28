@@ -7,7 +7,8 @@ namespace HomeCook.Data.CustomException
     {
         public const string CategoryAlreadyExist = "Category Already Exist",
             CategoryDoesntExist = "Category Doesn't Exist",
-            SomethingWentWrong = "Something Went Wrong";
+            SomethingWentWrong = "Something Went Wrong",
+            CantAddManyOfTheSameCategories = "you can't add many of the same Categories";
 
         readonly Dictionary<string, string> errors = new Dictionary<string, string>();
         public CategoryException(string errorMessage) : base(String.Format(errorMessage))

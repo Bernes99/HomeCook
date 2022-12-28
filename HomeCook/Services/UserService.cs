@@ -81,7 +81,7 @@ namespace HomeCook.Services
             var user = Context.Users.FirstOrDefault(x => x.Id == id && !x.IsDeleted);
             if (user is null )
             {
-                throw new NullReferenceException(); //TODO
+                throw new AuthException(AuthException.UserDoesNotExist);
             }
             var userDto = Mapper.Map<UserDto>(user);
 
