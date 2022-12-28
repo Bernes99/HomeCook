@@ -152,14 +152,5 @@ namespace HomeCook.Controllers
             return Ok(status);
         }
 
-        
-
-
-        [HttpGet("test")]
-        public async Task<ActionResult<LoggedInResponse>> test()
-        {
-            AuthService.test();
-            return Ok();
-        }
     }
 }

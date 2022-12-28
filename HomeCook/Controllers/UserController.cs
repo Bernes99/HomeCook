@@ -104,9 +104,6 @@ namespace HomeCook.Controllers
             var result = _imageService.GetProfileImage(Id);
 
             return Ok(result);
-
-            //Byte[] b = System.IO.File.ReadAllBytes(@"C:\Users\lukas\Desktop\test.png");
-            //return File(b, "image/jpeg");
         }
         #endregion
 

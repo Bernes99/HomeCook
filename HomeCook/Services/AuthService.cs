@@ -185,14 +185,6 @@ namespace HomeCook.Services
                 return Convert.ToBase64String(randomNumber);
             }
         }
-        public async void test()
-        {
-            var test2 = Context.Users.ToList();
-            var test = Context.Products.ToList();
-
-            //var test3 = (await signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
-            
-        }
 
         public async Task<AuthenticationResponse> Refresh(string refreshToken)
         {

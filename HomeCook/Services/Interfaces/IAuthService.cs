@@ -24,6 +24,5 @@ namespace HomeCook.Services.Interfaces
         Task<AuthenticationResponse> Refresh(string refreshToken);
         Task<AppUser> Register(RegisterDto registerDto);
         Task<IdentityResult> ResetPassword(ResetPasswordDto resetPassword);
-        void test();
     }
 }

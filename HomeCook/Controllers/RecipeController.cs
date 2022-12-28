@@ -74,7 +74,7 @@ namespace HomeCook.Controllers
             {
                 return Unauthorized();
             }
-            var test = await _recipeService.AddRecipe(mainPicture, pictures, model);
+            await _recipeService.AddRecipe(mainPicture, pictures, model);
 
             return Ok();
         }
