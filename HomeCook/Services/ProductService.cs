@@ -246,7 +246,7 @@ namespace HomeCook.Services
             var modelProducts = model.Select(x => x.ProductId).ToArray();
             if (modelProducts.Length != modelProducts.Distinct().Count())
             {
-                throw new ProductException(ProductException.CantAddManyOfTheSameProduscts);
+                throw new ProductException(ProductException.CantAddManyOfTheSameProducts);
             }
             foreach (var uProduct in model)
             {

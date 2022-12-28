@@ -6,7 +6,6 @@ namespace HomeCook.Data.CustomException
     {
         public const string InvalidCode = "Invalid Code",
             TooManyLoginAttempts = "Too Many Login Attempts",
-            UserHasNoInstitutionAssigned = "User has no Institution assigned.",
             UserAlreadyExist = "User Already Exist.",
             InvalidLoginAttempt = "Invalid Login Attempt",
             UserDoesNotExist = "User Does Not Exist",

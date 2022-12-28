@@ -34,11 +34,236 @@ namespace HomeCook.Data.Extensions
             switch (exception)
             {
                 case AuthException:
-                    await context.Response.WriteAsync(new ErrorDetails()
+                    switch(exception.Message)
                     {
-                        StatusCode = StatusCodes.Status401Unauthorized,
-                        Message = exception.Message//$"Exeption on: ${exception.Source} with message: {exception.Message}"
-                    }.ToString());
+                        case AuthException.InvalidCode:
+                            await context.Response.WriteAsync(new ErrorDetails()
+                            {
+                                StatusCode = StatusCodes.Status400BadRequest,
+                                Message = exception.Message
+                            }.ToString());
+                            break;
+                        case AuthException.TooManyLoginAttempts:
+                            await context.Response.WriteAsync(new ErrorDetails()
+                            {
+                                StatusCode = StatusCodes.Status423Locked,
+                                Message = exception.Message
+                            }.ToString());
+                            break;
+                        case AuthException.UserAlreadyExist:
+                            await context.Response.WriteAsync(new ErrorDetails()
+                            {
+                                StatusCode = StatusCodes.Status400BadRequest,
+                                Message = exception.Message
+                            }.ToString());
+                            break;
+                        case AuthException.InvalidLoginAttempt:
+                            await context.Response.WriteAsync(new ErrorDetails()
+                            {
+                                StatusCode = StatusCodes.Status400BadRequest,
+                                Message = exception.Message
+                            }.ToString());
+                            break;
+                        case AuthException.UserDoesNotExist:
+                            await context.Response.WriteAsync(new ErrorDetails()
+                            {
+                                StatusCode = StatusCodes.Status400BadRequest,
+                                Message = exception.Message
+                            }.ToString());
+                            break;
+                        case AuthException.BadRequest:
+                            await context.Response.WriteAsync(new ErrorDetails()
+                            {
+                                StatusCode = StatusCodes.Status400BadRequest,
+                                Message = exception.Message
+                            }.ToString());
+                            break;
+                        case AuthException.InvalidRefreshToken:
+                            await context.Response.WriteAsync(new ErrorDetails()
+                            {
+                                StatusCode = StatusCodes.Status400BadRequest,
+                                Message = exception.Message
+                            }.ToString());
+                            break;
+                        default:
+                            await context.Response.WriteAsync(new ErrorDetails()
+                            {
+                                StatusCode = context.Response.StatusCode,
+                                Message = exception.Message
+                            }.ToString());
+                            break;
+                    }
+                    break;   
+                    
+                case CategoryException:
+                    switch (exception.Message)
+                    {
+                        case CategoryException.CategoryAlreadyExist:
+                            await context.Response.WriteAsync(new ErrorDetails()
+                            {
+                                StatusCode = StatusCodes.Status400BadRequest,
+                                Message = exception.Message
+                            }.ToString());
+                            break;
+                        case CategoryException.CategoryDoesntExist:
+                            await context.Response.WriteAsync(new ErrorDetails()
+                            {
+                                StatusCode = StatusCodes.Status400BadRequest,
+                                Message = exception.Message
+                            }.ToString());
+                            break;
+                        case CategoryException.SomethingWentWrong:
+                            await context.Response.WriteAsync(new ErrorDetails()
+                            {
+                                StatusCode = StatusCodes.Status500InternalServerError,
+                                Message = exception.Message
+                            }.ToString());
+                            break;
+                        case CategoryException.CantAddManyOfTheSameCategories:
+                            await context.Response.WriteAsync(new ErrorDetails()
+                            {
+                                StatusCode = StatusCodes.Status400BadRequest,
+                                Message = exception.Message
+                            }.ToString());
+                            break;
+                        default:
+                            await context.Response.WriteAsync(new ErrorDetails()
+                            {
+                                StatusCode = context.Response.StatusCode,
+                                Message = exception.Message
+                            }.ToString());
+                            break;
+
+                    }
+                    break;
+                case ImageException:
+                    switch (exception.Message)
+                    {
+                        case ImageException.ProfileImageError:
+                            await context.Response.WriteAsync(new ErrorDetails()
+                            {
+                                StatusCode = StatusCodes.Status400BadRequest,
+                                Message = exception.Message
+                            }.ToString());
+                            break;
+                        case ImageException.UserhasNoProfileImage:
+                            await context.Response.WriteAsync(new ErrorDetails()
+                            {
+                                StatusCode = StatusCodes.Status400BadRequest,
+                                Message = exception.Message
+                            }.ToString());
+                            break;
+                        case ImageException.RecipeImageError:
+                            await context.Response.WriteAsync(new ErrorDetails()
+                            {
+                                StatusCode = StatusCodes.Status400BadRequest,
+                                Message = exception.Message
+                            }.ToString());
+                            break;
+                        case ImageException.RecipeHasNoMainImage:
+                            await context.Response.WriteAsync(new ErrorDetails()
+                            {
+                                StatusCode = StatusCodes.Status400BadRequest,
+                                Message = exception.Message
+                            }.ToString());
+                            break;
+                        default:
+                            await context.Response.WriteAsync(new ErrorDetails()
+                            {
+                                StatusCode = context.Response.StatusCode,
+                                Message = exception.Message
+                            }.ToString());
+                            break;
+
+                    }
+                    break;
+                case ProductException:
+                    switch (exception.Message)
+                    {
+                        case ProductException.ProductCategoryAlreadyExist:
+                            await context.Response.WriteAsync(new ErrorDetails()
+                            {
+                                StatusCode = StatusCodes.Status400BadRequest,
+                                Message = exception.Message
+                            }.ToString());
+                            break;
+                        case ProductException.ProductCategoryDoesntExist:
+                            await context.Response.WriteAsync(new ErrorDetails()
+                            {
+                                StatusCode = StatusCodes.Status400BadRequest,
+                                Message = exception.Message
+                            }.ToString());
+                            break;
+                        case ProductException.SomethingWentWrong:
+                            await context.Response.WriteAsync(new ErrorDetails()
+                            {
+                                StatusCode = StatusCodes.Status500InternalServerError,
+                                Message = exception.Message
+                            }.ToString());
+                            break;
+                        case ProductException.ProductAlreadyExist:
+                            await context.Response.WriteAsync(new ErrorDetails()
+                            {
+                                StatusCode = StatusCodes.Status400BadRequest,
+                                Message = exception.Message
+                            }.ToString());
+                            break;
+                        case ProductException.ProductDoesntExist:
+                            await context.Response.WriteAsync(new ErrorDetails()
+                            {
+                                StatusCode = StatusCodes.Status400BadRequest,
+                                Message = exception.Message
+                            }.ToString());
+                            break;
+                        case ProductException.UserAlreadyHaveThisProduct:
+                            await context.Response.WriteAsync(new ErrorDetails()
+                            {
+                                StatusCode = StatusCodes.Status400BadRequest,
+                                Message = exception.Message
+                            }.ToString());
+                            break;
+                        case ProductException.CantAddManyOfTheSameProducts:
+                            await context.Response.WriteAsync(new ErrorDetails()
+                            {
+                                StatusCode = StatusCodes.Status400BadRequest,
+                                Message = exception.Message
+                            }.ToString());
+                            break;
+                        default:
+                            await context.Response.WriteAsync(new ErrorDetails()
+                            {
+                                StatusCode = context.Response.StatusCode,
+                                Message = exception.Message
+                            }.ToString());
+                            break;
+
+                    }
+                    break;
+                case RecipeException:
+                    switch (exception.Message)
+                    {
+                        case RecipeException.ReicpeDoesntExist:
+                            await context.Response.WriteAsync(new ErrorDetails()
+                            {
+                                StatusCode = StatusCodes.Status400BadRequest,
+                                Message = exception.Message
+                            }.ToString());
+                            break;
+                        case RecipeException.CommentDoesntExist:
+                            await context.Response.WriteAsync(new ErrorDetails()
+                            {
+                                StatusCode = StatusCodes.Status400BadRequest,
+                                Message = exception.Message
+                            }.ToString());
+                            break;
+                        default:
+                            await context.Response.WriteAsync(new ErrorDetails()
+                            {
+                                StatusCode = context.Response.StatusCode,
+                                Message = exception.Message
+                            }.ToString());
+                            break;
+                    }
                     break;
 
                 default:

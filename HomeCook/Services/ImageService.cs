@@ -48,7 +48,7 @@ namespace HomeCook.Services
                         }
                         catch (Exception)
                         {
-                            throw new AuthException(AuthException.ProfileImageError);
+                            throw new ImageException(ImageException.ProfileImageError);
                         }
                     }
                 }

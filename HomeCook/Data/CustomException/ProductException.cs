@@ -11,7 +11,7 @@ namespace HomeCook.Data.CustomException
             ProductAlreadyExist = "Product Already Exist",
             ProductDoesntExist = "Product Doesn't Exist",
             UserAlreadyHaveThisProduct = "User Already Have This Product",
-            CantAddManyOfTheSameProduscts = "you can't add many of the same products";
+            CantAddManyOfTheSameProducts = "you can't add many of the same products";
 
         readonly Dictionary<string, string> errors = new Dictionary<string, string>();
         public ProductException(string errorMessage) : base(String.Format(errorMessage))
