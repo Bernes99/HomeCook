@@ -19,7 +19,7 @@ namespace HomeCook.Data.Extensions.SearchEngine
         const LuceneVersion version = LuceneVersion.LUCENE_48;
 
 
-        public RecipeSearchEngine(IConfiguration configuration)
+        public RecipeSearchEngine()
         {
             string workingDirectory = Environment.CurrentDirectory;
             var dictionaryPath = System.IO.Directory.GetParent(workingDirectory).Parent.FullName + "/IndexSearch";
@@ -33,8 +33,7 @@ namespace HomeCook.Data.Extensions.SearchEngine
             Analyzer = new StandardAnalyzer(version);
 
             var config = new IndexWriterConfig(version, Analyzer);
-            //Singleton pattern for IndexWriter to ensure only one
-            //IndexWriter exists per index.
+
             _indexWriter = _indexWriter ?? new IndexWriter(
                 Directory,
                 config);
@@ -178,7 +177,7 @@ namespace HomeCook.Data.Extensions.SearchEngine
             {
                 var field = new TextField(
                     IndexField.Product.ToString(),
-                    x.Product.Name,// + " {" + x.Id + "}",
+                    x.Product.Name,
                     Field.Store.YES);
 
                 document.Add(field);
@@ -187,13 +186,13 @@ namespace HomeCook.Data.Extensions.SearchEngine
             recipe.RecipeCategories.ToList().ForEach(x =>
                 document.Add(new TextField(
                     IndexField.Category.ToString(),
-                    x.Category.Name, //+ " {" + x.Id + "}",
+                    x.Category.Name, 
                     Field.Store.YES)));
 
             recipe.RecipeTags.ToList().ForEach(x =>
                 document.Add(new TextField(
                     IndexField.Tag.ToString(),
-                    x.Tag.Name, //+ " {" + x.Id + "}",
+                    x.Tag.Name,
                     Field.Store.YES)));
 
             return document;
@@ -242,9 +241,7 @@ namespace HomeCook.Data.Extensions.SearchEngine
         public List<LuceneRecipeSearchResultItem> Search(
             string searchString,
             RecipeFilters filters)
-        {
-            
-            
+        { 
             var queryParser = new MultiFieldQueryParser(version, FieldKeys.ToArray(), Analyzer);
 
             Query query;
@@ -257,21 +254,18 @@ namespace HomeCook.Data.Extensions.SearchEngine
             {
                 query = CreateFilteredQuery(filters, queryParser.Parse(searchString));
             }
-            
-
+                
             if (query is null)
             {
                 throw new ArgumentException(
                     $"No meaningful query could be derived from " +
                     $"the given searchString: {searchString}");
             }
-
+                
             var directoryReader = DirectoryReader.Open(Directory);
             var indexSearcher = new IndexSearcher(directoryReader);
 
-
             var hits = indexSearcher.Search(query, 10).ScoreDocs;
-
             var recipes = new List<LuceneRecipeSearchResultItem>();
             foreach (var hit in hits)
             {
@@ -285,11 +279,8 @@ namespace HomeCook.Data.Extensions.SearchEngine
                     Rating = float.Parse(document.Get(IndexField.Rating.ToString())),
                     Author = document.Get(IndexField.Author.ToString()),
                     Products = document.GetValues(IndexField.Product.ToString()).ToList(),
-                    //MainImage =_imageService.GetrecipeMainImage(long.Parse(document.Get(IndexField.PublicId.ToString())))
                 });
-
             }
-
             return recipes;
         }
 
@@ -311,25 +302,17 @@ namespace HomeCook.Data.Extensions.SearchEngine
             }
             if (filters.Rating > 1f)
             {
-                //var ratingFilter = NumericRangeFilter.NewSingleRange(IndexField.Rating.ToString(), 1,filters.Rating,5,true,true);
-                //bQuery.Add(new FilteredQuery(bQuery,ratingFilter),Occur.SHOULD);
-
                 var ratingQuery = NumericRangeQuery.NewSingleRange(IndexField.Rating.ToString(), 1, filters.Rating, 5, true, true);
                 bQuery.Add(ratingQuery, Occur.MUST);
             }
             if (filters.Difficulty > 1f)
             {
-                //var difFilter = NumericRangeFilter.NewSingleRange(IndexField.Difficulty.ToString(), 1, filters.Difficulty, 10, true, true);
-                //bQuery.Add(new FilteredQuery(bQuery, difFilter), Occur.SHOULD);
                 var difQuery = NumericRangeQuery.NewSingleRange(IndexField.Difficulty.ToString(), 1, filters.Difficulty, 10, true, true);
                 bQuery.Add(difQuery, Occur.MUST);
             }
             bQuery.Add(criteria, Occur.MUST);
 
             return bQuery;
-            //var queryParser = new MultiFieldQueryParser(version, _index.FieldKeys.ToArray(), _index.Analyzer);
-
-            //var queryresult = queryParser.Parse(searchString);
         }
     }
 }
