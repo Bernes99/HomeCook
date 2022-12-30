@@ -302,12 +302,12 @@ namespace HomeCook.Data.Extensions.SearchEngine
             }
             if (filters.Rating > 1f)
             {
-                var ratingQuery = NumericRangeQuery.NewSingleRange(IndexField.Rating.ToString(), 1, filters.Rating, 5, true, true);
+                var ratingQuery = NumericRangeQuery.NewSingleRange(IndexField.Rating.ToString(), filters.Rating, 5, true, true);
                 bQuery.Add(ratingQuery, Occur.MUST);
             }
             if (filters.Difficulty > 1f)
             {
-                var difQuery = NumericRangeQuery.NewSingleRange(IndexField.Difficulty.ToString(), 1, filters.Difficulty, 10, true, true);
+                var difQuery = NumericRangeQuery.NewSingleRange(IndexField.Difficulty.ToString(), filters.Difficulty, 10, true, true);
                 bQuery.Add(difQuery, Occur.MUST);
             }
             bQuery.Add(criteria, Occur.MUST);
