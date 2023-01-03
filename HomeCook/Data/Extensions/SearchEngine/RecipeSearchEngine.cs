@@ -152,6 +152,10 @@ namespace HomeCook.Data.Extensions.SearchEngine
                 IndexField.Introdution.ToString(),
                 recipe.Introdution ?? "",
                 Field.Store.YES));
+            document.Add(new TextField(
+                IndexField.Text.ToString(),
+                recipe.Text ?? "",
+                Field.Store.YES));
             document.Add(new SingleField(
                 IndexField.Rating.ToString(),
                 recipe.Rating ?? 1f,
@@ -227,6 +231,7 @@ namespace HomeCook.Data.Extensions.SearchEngine
             DateCreatedUtc,
             Title,
             Introdution,
+            Text,
             Rating,
             Portion,
             Author,
