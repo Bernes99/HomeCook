@@ -10,7 +10,7 @@ namespace HomeCook.Services.Interfaces
         Task<Product> AddProduct(ProductDto newProduct);
         Task<ProductCategory> AddProductCategory(string categoryName);
         Task<List<UserProduct>> AddOrUpdateUserProducts(List<AddUserProductDto> model, string userId);
-        void DeleteProduct(string Id);
+        void DeleteProduct(string Id, string UserId);
         void DeleteProductCategory(string Id);
         Task<List<UserProduct>> DeleteUserProduct(IdsDto model, string userId);
         Task<List<CategoryDto>> GetAllProductCategories();

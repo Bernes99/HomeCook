@@ -2,47 +2,28 @@
 
 namespace HomeCook.Data.Migrations
 {
-    //[Migration(6)]
-    //public class ChangeTagTableName : Migration
-    //{
-    //    public override void Up()
-    //    {
-            
-    //        if (Schema.Schema("App").Table("Tags").Exists())
-    //        {
-    //            Rename.Table("Tags").InSchema("App").To("KeyWords");            
-    //        }
-    //        if (Schema.Schema("App").Table("RecipesTags").Exists())
-    //        {
-    //            Rename.Table("RecipesTags").InSchema("App").To("RecipeKeyWord");
+    [Migration(6)]
+    public class ChangeTagTableName : Migration
+    {
+        public override void Up()
+        {
 
-    //            Delete.Column("TagId").FromTable("RecipeKeyWord").InSchema("App");
-    //            Alter.Table("RecipeKeyWord").InSchema("App").AddColumn("KeyWordId").AsInt64().ForeignKey("FK_RecipeKeyWord_KeyWordId", "App", "KeyWords", "Id");
+            if (Schema.Schema("App").Table("Product").Exists())
+            {
+                Alter.Table("Product").InSchema("App").AddColumn("DateDeletedUtc").AsDateTime2().Nullable();
+                Alter.Table("Product").InSchema("App").AddColumn("DeletedBy").AsFixedLengthAnsiString(36).Nullable();
+            }
 
-    //            Delete.Column("RecipeId").FromTable("RecipeKeyWord").InSchema("App");
-    //            Alter.Table("RecipeKeyWord").InSchema("App").AddColumn("RecipeId").AsInt64().ForeignKey("FK_RecipeKeyWord_RecipeId", "App", "Recipes", "Id");
+        }
+        public override void Down()
+        {
 
-    //        }
+            if (Schema.Schema("App").Table("Product").Exists())
+            {
+                Delete.Column("DateDeletedUtc").FromTable("Product").InSchema("App");
+                Delete.Column("DeletedBy").FromTable("Product").InSchema("App");
+            }
 
-    //    }
-    //    public override void Down()
-    //    {
-
-    //        if (Schema.Schema("App").Table("Tags").Exists())
-    //        {
-    //            Rename.Table("KeyWords").InSchema("App").To("Tags");
-    //        }
-    //        if (Schema.Schema("App").Table("RecipesTags").Exists())
-    //        {
-    //            Rename.Table("RecipeKeyWord").InSchema("App").To("RecipesTags");
-
-    //            Delete.Column("KeyWordId").FromTable("RecipesTag").InSchema("App");
-    //            Alter.Table("RecipesTag").InSchema("App").AddColumn("TagId").AsInt64().ForeignKey("FK_RecipesTags_TagId", "App", "Tags", "Id");
-
-    //            Delete.Column("RecipeId").FromTable("RecipesTag").InSchema("App");
-    //            Alter.Table("RecipesTag").InSchema("App").AddColumn("RecipeId").AsInt64().ForeignKey("FK_RecipesTags_RecipeId", "App", "Recipes", "Id");
-
-    //        }
-    //    }
-    //}
+        }
+    }
 }

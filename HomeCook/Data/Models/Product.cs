@@ -17,6 +17,8 @@ namespace HomeCook.Data.Models
         public long? Calories { get; set; }
         public long CategoryId { get; set; }
         public int? UnitType { get; set; }
+        public DateTime? DateDeletedUtc { get; set; }
+        public string? DeletedBy { get; set; }
 
         public virtual ProductCategory Category { get; set; } = null!;
         public virtual ICollection<RecipeProduct> RecipeProducts { get; set; }

@@ -79,7 +79,7 @@ namespace HomeCook.Controllers
             {
                 return BadRequest();
             }
-            _productService.DeleteProduct(Id);
+            _productService.DeleteProduct(Id, User.Claims.FirstOrDefault(x => x.Type == "PublicId")?.Value);
             return Ok();
         }
 

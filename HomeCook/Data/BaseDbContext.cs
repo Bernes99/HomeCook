@@ -43,7 +43,27 @@ namespace HomeCook.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
 			base.OnModelCreating(modelBuilder);
-            modelBuilder.HasPostgresExtension("uuid-ossp");
+            modelBuilder.HasPostgresExtension("btree_gin")
+                .HasPostgresExtension("btree_gist")
+                .HasPostgresExtension("citext")
+                .HasPostgresExtension("cube")
+                .HasPostgresExtension("dblink")
+                .HasPostgresExtension("dict_int")
+                .HasPostgresExtension("dict_xsyn")
+                .HasPostgresExtension("earthdistance")
+                .HasPostgresExtension("fuzzystrmatch")
+                .HasPostgresExtension("hstore")
+                .HasPostgresExtension("intarray")
+                .HasPostgresExtension("ltree")
+                .HasPostgresExtension("pg_stat_statements")
+                .HasPostgresExtension("pg_trgm")
+                .HasPostgresExtension("pgcrypto")
+                .HasPostgresExtension("pgrowlocks")
+                .HasPostgresExtension("pgstattuple")
+                .HasPostgresExtension("tablefunc")
+                .HasPostgresExtension("unaccent")
+                .HasPostgresExtension("uuid-ossp")
+                .HasPostgresExtension("xml2");
 
             modelBuilder.Entity<Category>(entity =>
             {
@@ -102,6 +122,12 @@ namespace HomeCook.Data
                     .IsUnique();
 
                 entity.Property(e => e.Id).UseIdentityAlwaysColumn();
+
+                entity.Property(e => e.DateDeletedUtc).HasColumnType("timestamp without time zone");
+
+                entity.Property(e => e.DeletedBy)
+                    .HasMaxLength(36)
+                    .IsFixedLength();
 
                 entity.Property(e => e.Name).HasMaxLength(128);
 

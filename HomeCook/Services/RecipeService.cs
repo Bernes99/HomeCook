@@ -310,7 +310,15 @@ namespace HomeCook.Services
                 var user = await _userService.FindUserAsyncbyId(comment.Author);
                 var displayName = user.firstName + " " + user.surname;
                 comment.Author = String.IsNullOrWhiteSpace(displayName) ? user.UserName : displayName;
-                comment.AuthorProfile = _imageService.GetProfileImage(user.Id);
+                try
+                {
+                    comment.AuthorProfile = _imageService.GetProfileImage(user.Id);
+                }
+                catch (Exception)
+                {
+                    comment.AuthorProfile = null;
+                }
+                
             }
 
             return commentsDto;

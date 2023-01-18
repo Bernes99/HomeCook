@@ -100,7 +100,7 @@ namespace HomeCook.Services
 
         public async Task<Product> AddProduct(ProductDto newProduct)
         {
-            var product = Context.Products.FirstOrDefault(x => x.Name == newProduct.Name);
+            var product = Context.Products.FirstOrDefault(x => x.Name == newProduct.Name && x.DeletedBy == null && x.DateDeletedUtc == null);
             if (product is not null)
             {
                 throw new ProductException(ProductException.ProductAlreadyExist);
@@ -117,20 +117,21 @@ namespace HomeCook.Services
             return product;
         }
 
-        public void DeleteProduct(string Id)
+        public void DeleteProduct(string Id, string UserId)
         {
             var product = Context.Products.FirstOrDefault(x => x.PublicId == Id);
             if (product is null)
             {
                 throw new ProductException(ProductException.ProductDoesntExist);
             }
-            Context.Remove(product);
-            Context.SaveChanges();
+            product.DeletedBy = UserId;
+            product.DateDeletedUtc = DateTime.UtcNow;
+            Update(product);
         }
 
         public async Task<ProductResponseDto> GetProduct(string Id)
         {
-            var product = Context.Products.Include(c => c.Category).FirstOrDefault(x => x.PublicId == Id);
+            var product = Context.Products.Include(c => c.Category).FirstOrDefault(x => x.PublicId == Id && x.DeletedBy == null && x.DateDeletedUtc == null);
             if (product is null)
             {
                 throw new ProductException(ProductException.ProductDoesntExist);
@@ -147,13 +148,14 @@ namespace HomeCook.Services
             {
                 products = Context.Products
                     .Include(c => c.Category)
-                    .Where(x => x.Category.Name.ToUpper() == category.ToUpper())
+                    .Where(x => x.Category.Name.ToUpper() == category.ToUpper() && x.DeletedBy == null && x.DateDeletedUtc == null)
                     .ToList();
             }
             else
             {
                 products = Context.Products
                     .Include(c => c.Category)
+                    .Where(x => x.DeletedBy == null && x.DateDeletedUtc == null)
                     .ToList();
             }
 
@@ -176,9 +178,10 @@ namespace HomeCook.Services
             var products = !String.IsNullOrEmpty(category) ? 
                 Context.Products
                     .Include(c => c.Category)
-                    .Where(x => x.Category.Name.ToUpper() == category.ToUpper()) :  
+                    .Where(x => x.Category.Name.ToUpper() == category.ToUpper() && x.DeletedBy == null && x.DateDeletedUtc == null) :  
                 Context.Products
-                    .Include(c => c.Category);
+                    .Include(c => c.Category)
+                    .Where(x => x.DeletedBy == null && x.DateDeletedUtc == null);
 
             if (products is null)
             {
@@ -264,7 +267,15 @@ namespace HomeCook.Services
 
                 if (userProductsBeforeUpdate.Contains(userProduct.ProductId))
                 {
-                    updateUserProduct.Add(userProduct);
+                    //updateUserProduct.Add(userProduct);
+                    var prod = Context.UserProducts.FirstOrDefault(x => userProduct.ProductId == x.ProductId);
+                    if (prod != null)
+                    {
+                        prod.Amount = userProduct.Amount;
+                        prod.ExpirationDate = userProduct.ExpirationDate;
+                        Context.UserProducts.Update(prod);
+                    }
+                    
                 }
                 else
                 {
@@ -275,10 +286,7 @@ namespace HomeCook.Services
             {
                 Context.UserProducts.AddRange(addUserProduct);
             }
-            if (updateUserProduct.Count > 0)
-            {
-                Context.UserProducts.UpdateRange(updateUserProduct);
-            }
+
             SaveChanges();
             return userProducts;
         }
@@ -315,7 +323,7 @@ namespace HomeCook.Services
 
         public Dictionary<long, string> FindAllPorductIds()
         {
-            return Context.Products.Select(p => new KeyValuePair<long, string>(p.Id, p.PublicId)).ToDictionary(x => x.Key, x => x.Value);
+            return Context.Products.Where(x => x.DeletedBy == null && x.DateDeletedUtc == null).Select(p => new KeyValuePair<long, string>(p.Id, p.PublicId)).ToDictionary(x => x.Key, x => x.Value);
         }
     }
 }
