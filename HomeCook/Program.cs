@@ -138,7 +138,7 @@ builder.Services.AddSwaggerGen( options =>
 //Servisy
 builder.Services.AddDbContext<DefaultDbContext>(optionsBuilder => optionsBuilder.UseNpgsql(connectionString)); //connectionString
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true); // to correctly save dateTime to postgres db
-//builder.Services.AddDbContext<AppIdentityDbContext>(optionsBuilder => optionsBuilder.UseNpgsql(builder.Configuration.GetConnectionString("IdentityDatabase")));
+
 builder.Services.AddScoped<IPasswordHasher<AppUser>, PasswordHasher<AppUser>>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IWeatherForecastService, WeatherForecastService>();
@@ -151,8 +151,6 @@ builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IRecipeService, RecipeService>();
 
 builder.Services.AddSingleton<IRecipeSearchEngine, RecipeSearchEngine>();
-//builder.Services.AddScoped<IRecipeIndex, RecipeIndex>();
-//builder.Services.AddScoped<ILuceneWriter, LuceneWriter>();
 
 //to google auth
 builder.Services.Configure<CookiePolicyOptions>(options =>
@@ -184,7 +182,7 @@ using (var scope = serviceProvider.CreateScope())
 var app = builder.Build();
 
 
-// Tutaj dodawaj middleware do pipelina
+// middleware do pipelina
 var scopeServices = app.Services.CreateScope();
 var seeder = scopeServices.ServiceProvider.GetRequiredService<ProductCategorySeeder>();
 seeder.Seed();

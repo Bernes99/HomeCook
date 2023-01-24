@@ -7,18 +7,7 @@ namespace HomeCook.Data.Migrations
     public class basicTables : Migration
     {
         public override void Up()
-        {
-            //Create.Table("Users")
-            //    .WithColumn("Id").AsInt64().PrimaryKey().Identity()  
-            //    .WithColumn("PublicId").AsFixedLengthAnsiString(36)  
-            //    .WithColumn("DateCreatedUtc").AsDateTime2().WithColumn("CreatedBy").AsInt64().WithColumn("DateModifiedUtc").AsDateTime2().Nullable().WithColumn("ModifiedBy").AsInt64().Nullable() 
-            //    .WithColumn("DateDeletedUtc").AsDateTime2().Nullable().WithColumn("DeletedBy").AsInt64().Nullable() 
-            //    .WithColumn("FirstName").AsString(150)
-            //    .WithColumn("Surname").AsString(150)
-            //    .WithColumn("Login").AsString(250)
-            //    .WithColumn("PasswordHash").AsString(250).Nullable()
-            //    .WithColumn("IsAdmin").AsBoolean();
-            
+        {          
             if (!Schema.Schema("App").Table("Product").Exists())
             {
                 Create.Table("Product").InSchema("App")
@@ -44,20 +33,6 @@ namespace HomeCook.Data.Migrations
                     .WithColumn("AuthorId").AsFixedLengthAnsiString(36)
                     .WithColumn("PreparingTime").AsText()
                     .WithColumn("Difficulty").AsFloat();
-
-                    //.WithColumn("Name").AsString(128)
-                    //.WithColumn("LastLogin").AsDateTime2().Nullable()
-                    //.WithColumn("Login").AsString(64).Unique()
-                    //.WithColumn("Password").AsString(256)
-                    //.WithColumn("FirstName").AsString(32)
-                    //.WithColumn("LastName").AsString(32)
-                    //.WithColumn("Email").AsString(64).Unique()
-                    //.WithColumn("Photo").AsString(512).Nullable()
-                    //.WithColumn("RefreshToken").AsString(256).Nullable()
-                    //.WithColumn("RefreshTokenExpiryTime").AsDateTime2().Nullable()
-                    //.WithColumn("RoleId").AsInt64()
-                    //    .ForeignKey("FK_User_RoleId", "Role", "Id")
-                    //    .OnDeleteOrUpdate(Rule.Cascade);
             }
             if (!Schema.Schema("App").Table("Comment").Exists())
             {
@@ -173,7 +148,7 @@ namespace HomeCook.Data.Migrations
 
         public override void Down()
         {
-            // zachowac dobą kolejnosc usuwania tak aby nie prowowac usuwac tabel z istniejaca zaleznoscia do innej
+            // zachowac dobą kolejnosc usuwania tak aby nie usuwac tabel z istniejaca zaleznoscia do innej
 
             if (Schema.Schema("App").Table("Product").Exists())
             {

@@ -44,7 +44,6 @@ namespace HomeCook.Controllers
                 return BadRequest();
             }
             Response.Cookies.Append(JWT_TOKEN_COOKIE_NAME, tokens.JwtToken, new CookieOptions() { HttpOnly = true, SameSite = SameSiteMode.Strict, Expires = DateTime.UtcNow.AddHours(AuthSettings.JwtExpireHours) });
-            //Response.Cookies.Append("X-Username", user.UserName, new CookieOptions() { HttpOnly = true, SameSite = SameSiteMode.Strict });
             Response.Cookies.Append(REFRESH_TOKEN_COOKIE_NAME, tokens.RefreshToken, new CookieOptions() { HttpOnly = true, SameSite = SameSiteMode.Strict, Expires = DateTime.UtcNow.AddHours(AuthSettings.RefreshTokenExpireHours) });
 
             return Ok();
@@ -68,7 +67,6 @@ namespace HomeCook.Controllers
             }
 
             Response.Cookies.Append(JWT_TOKEN_COOKIE_NAME, tokens.JwtToken, new CookieOptions() { HttpOnly = true, SameSite = SameSiteMode.Strict, Expires = DateTime.UtcNow.AddHours(AuthSettings.JwtExpireHours) });
-            //Response.Cookies.Append("X-Username", user.UserName, new CookieOptions() { HttpOnly = true, SameSite = SameSiteMode.Strict });
             Response.Cookies.Append(REFRESH_TOKEN_COOKIE_NAME, tokens.RefreshToken, new CookieOptions() { HttpOnly = true, SameSite = SameSiteMode.Strict, Expires = DateTime.UtcNow.AddHours(AuthSettings.RefreshTokenExpireHours) });
 
             return Ok(tokens);
@@ -79,7 +77,6 @@ namespace HomeCook.Controllers
         {
             await AuthService.Logout();
             Response.Cookies.Append("X-Access-Token", "", new CookieOptions() { HttpOnly = true, SameSite = SameSiteMode.Strict, Expires = DateTime.UtcNow.AddHours(-AuthSettings.JwtExpireHours) });
-            //Response.Cookies.Append("X-Username", user.UserName, new CookieOptions() { HttpOnly = true, SameSite = SameSiteMode.Strict });
             Response.Cookies.Append("X-Refresh-Token", "", new CookieOptions() { HttpOnly = true, SameSite = SameSiteMode.Strict, Expires = DateTime.UtcNow.AddHours(-AuthSettings.RefreshTokenExpireHours) });
 
             return Ok();
@@ -128,7 +125,6 @@ namespace HomeCook.Controllers
             }
 
             Response.Cookies.Append("X-Access-Token", result.JwtToken, new CookieOptions() { HttpOnly = true, SameSite = SameSiteMode.Strict, Expires = DateTime.UtcNow.AddHours(AuthSettings.JwtExpireHours) });
-            //Response.Cookies.Append("X-Username", user.UserName, new CookieOptions() { HttpOnly = true, SameSite = SameSiteMode.Strict });
             Response.Cookies.Append("X-Refresh-Token", result.RefreshToken, new CookieOptions() { HttpOnly = true, SameSite = SameSiteMode.Strict, Expires = DateTime.UtcNow.AddHours(AuthSettings.RefreshTokenExpireHours) });
             return Ok(result);
 

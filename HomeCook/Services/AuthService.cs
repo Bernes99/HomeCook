@@ -144,7 +144,6 @@ namespace HomeCook.Services
                 if (!result.Succeeded)
                 {
                     throw new AuthException(result.Errors.ToArray());
-                    //throw new Exception(AuthException.UserAlreadyExist);
                 }
                 var claims = new[] {
                 new Claim(ClaimTypes.Actor, ClaimType.User.ToString()),
@@ -164,7 +163,6 @@ namespace HomeCook.Services
                 else
                 {
                     await _userManager.DeleteAsync(newUser);
-                    //throw new AuthException(AuthException.UserAlreadyExist);
                     throw new Exception(AuthException.UserAlreadyExist);
                 }
             }
@@ -313,7 +311,7 @@ namespace HomeCook.Services
             var user = await _userManager.FindByEmailAsync(email);
             if (user == null)
                 return IdentityResult.Failed();
-            //URLEncode dlatego ze przy wysyłaniu na frodta jako query parameter sie psuje
+            //URLEncode dlatego ze przy wysyłaniu na fronta jako query parameter sie psuje
             var forgorPasswordCode = HttpUtility.UrlEncode(await _userManager.GeneratePasswordResetTokenAsync(user));
             await _emailService.SendForgotPasswordEmail(user, forgorPasswordCode);
             return IdentityResult.Success;
