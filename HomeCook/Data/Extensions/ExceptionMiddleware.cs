@@ -36,7 +36,7 @@ namespace HomeCook.Data.Extensions
                 case RecipeException:
                     switch (exception.Message)
                     {
-                        case RecipeException.ReicpeDoesntExist:
+                        case RecipeException.RecipeDoesntExist:
                             await context.Response.WriteAsync(new ErrorDetails()
                             {
                                 StatusCode = StatusCodes.Status400BadRequest,

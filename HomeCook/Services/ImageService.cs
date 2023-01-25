@@ -79,7 +79,7 @@ namespace HomeCook.Services
             var recipe = Context.Recipes.FirstOrDefault(x => x.PublicId == recipeId);
             if (recipe is null)
             {
-                throw new RecipeException(RecipeException.ReicpeDoesntExist);
+                throw new RecipeException(RecipeException.RecipeDoesntExist);
             }
             AddOrUpdateRecipeImage(file, recipe.Id, isMainImage);
         }
@@ -139,7 +139,7 @@ namespace HomeCook.Services
             var recipe = Context.Recipes.FirstOrDefault(x => x.PublicId == recipePublicId);
             if (recipe == null)
             {
-                throw new RecipeException(RecipeException.ReicpeDoesntExist); 
+                throw new RecipeException(RecipeException.RecipeDoesntExist); 
             }
             return GetRecipeMainImage(recipe.Id);
         }

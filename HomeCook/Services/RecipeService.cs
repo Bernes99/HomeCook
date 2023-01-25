@@ -98,7 +98,7 @@ namespace HomeCook.Services
                 .Include(x => x.RecipeCategories).ThenInclude(x => x.Category).FirstOrDefault(x => x.PublicId == recipePublicId);
             if (recipe is null)
             {
-                throw new RecipeException(RecipeException.ReicpeDoesntExist);
+                throw new RecipeException(RecipeException.RecipeDoesntExist);
             }
             Mapper.Map(model, recipe);
             recipe.DateModifiedUtc = DateTime.UtcNow;
@@ -193,7 +193,7 @@ namespace HomeCook.Services
             var recipe = Context.Recipes.FirstOrDefault(x => x.PublicId == recipePublicId);
             if (recipe == null)
             {
-                throw new RecipeException(RecipeException.ReicpeDoesntExist);
+                throw new RecipeException(RecipeException.RecipeDoesntExist);
             }
             return await GetRecipeDetails(recipe.Id);
         }
@@ -207,7 +207,7 @@ namespace HomeCook.Services
                 .Include(x => x.RecipeImages).FirstOrDefault(x => x.Id == recipeInternalId);
             if (recipe == null)
             {
-                throw new RecipeException(RecipeException.ReicpeDoesntExist);
+                throw new RecipeException(RecipeException.RecipeDoesntExist);
             }
 
             var user = Context.Users.FirstOrDefault(x => x.Id == recipe.AuthorId);
@@ -301,7 +301,7 @@ namespace HomeCook.Services
 
             if (recipe is null)
             {
-                throw new RecipeException(RecipeException.ReicpeDoesntExist);
+                throw new RecipeException(RecipeException.RecipeDoesntExist);
             }
 
             var commentsDto = Mapper.Map<List<CommentResponseDto>>(recipe.Comments);
@@ -353,7 +353,7 @@ namespace HomeCook.Services
             var recipe = Context.Recipes.FirstOrDefault(x => x.PublicId == recipePublicId);
             if (recipe is null)
             {
-                throw new RecipeException(RecipeException.ReicpeDoesntExist);
+                throw new RecipeException(RecipeException.RecipeDoesntExist);
             }
             return recipe;
         }
